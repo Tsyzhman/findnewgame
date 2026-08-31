@@ -1,0 +1,78 @@
+# SMART plan coverage and launch gates
+
+Updated 2026-08-31. This document maps implementation to the 30 epics in the original project plan. “Implemented” means code and the stated checks exist; it does not imply public operation, legal clearance, real users, successful merchant settlement, or validated business demand.
+
+| Epic                          | Delivered implementation                                                                            | Remaining external or later-phase evidence                                                                                           |
+| ----------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| F5-001 Foundation             | English React/Worker app, D1/R2, schema migrations, auth boundary, themes and reproducible commands | Production capacity, backup/restore and operator review                                                                              |
+| F5-002 Steam taxonomy         | 430 English Steam-ID tags, source snapshot, curated roles, repeatable importer                      | Review future Steam changes before importing                                                                                         |
+| F5-003 Tag picker             | Search, category tabs, limits, keyboard selection and selected state                                | Human usability feedback                                                                                                             |
+| F5-004 Onboarding             | Five steps, 3–15 genres, mechanics/moods, Hard No, discovery mode                                   | Real onboarding conversion                                                                                                           |
+| F5-005 Preference vector      | Rank/category/rarity weights and bounded explicit behavioral updates                                | Learn from actual player behavior                                                                                                    |
+| F5-006 Developer accounts     | Studio ownership, profile, team-test exclusions                                                     | Verified real studios                                                                                                                |
+| F5-007 Game submission        | Steam lookup/manual form, uploads, media checks, rights confirmations, review                       | At least 100 rights-cleared approved games                                                                                           |
+| F5-008 Target perception      | Ranked tags and independent genre/core/mood targets, immutable versions                             | Developer-authored targets rather than sample assumptions                                                                            |
+| F5-009 Candidate filtering    | Status, content, Hard No, self-test and repeat constraints                                          | Live catalog breadth                                                                                                                 |
+| F5-010 Daily random selection | Personalized percentile pool, randomness and exposure weighting                                     | Real relevance feedback                                                                                                              |
+| F5-011 Daily constraints      | Three immutable slots, local day, publisher/studio/family diversity, race checks                    | Production concurrency/capacity validation                                                                                           |
+| F5-012 Quiz engine            | Server-owned stages, snapshots, finalization and protected mystery assets                           | Human device/browser coverage                                                                                                        |
+| F5-013 Progressive clues      | Artwork, screenshot, gallery, timed YouTube and description, missing-media handling                 | Third-party availability; trailer branding cannot be guaranteed hidden                                                               |
+| F5-014 Scoring                | Weighted partial match, stage ceilings, intent separate from accuracy                               | Human calibration feedback                                                                                                           |
+| F5-015 Daily results          | Three-completion streak, history, collection, zero-score completion, spoiler-free PNG               | Real retention and sharing behavior                                                                                                  |
+| F5-016 Calibration            | Version-scoped eligible aggregates and clue funnels, privacy minimums                               | 20 independent users to reveal reports; 100 for useful samples                                                                       |
+| F5-017 Misconceptions         | Ranked mismatch and confusion matrices                                                              | Meaningful real sample size                                                                                                          |
+| F5-018 Information gain       | Paired successive-clue measurement, scope/sample labels                                             | Real participant data                                                                                                                |
+| F5-019 A/B engine             | Between-user variants, frozen targets, one open experiment, separate retests                        | Experiment recruitment and decision review                                                                                           |
+| F5-020 Organic fairness       | Exposure-weighted random choice independent of payment                                              | Monitor real distribution, not synthetic impressions                                                                                 |
+| F5-021 Campaign management    | Moderation, funding gates, schedule, requested impressions, pause/resume                            | Verified paying advertisers                                                                                                          |
+| F5-022 Ad targeting           | Canonical tags, include any/at-least-N, exclusions, audience estimate                               | Actual audience size; estimates are not delivery promises                                                                            |
+| F5-023 Viewability            | 50% for one continuous second, authorized offer, idempotency and caps                               | Commercial fraud review; client visibility can be manipulated                                                                        |
+| F5-024 Pacing                 | Time/budget pacing, daily and lifetime frequency, atomic consumption                                | Real delivery patterns                                                                                                               |
+| F5-025 Lava                   | Custom-amount invoices, authenticated events, idempotency, uncertain-state handling                 | Merchant keys, callback reachability and authorized settlement test                                                                  |
+| F5-026 Tribute                | Signed webhook handling, donations, purchase/refund deduplication, admin reconciliation             | Merchant keys and real evidence; no unsupported automatic campaign matching                                                          |
+| F5-027 Donations              | Hosted provider links, safe unavailable state, no organic benefit                                   | Verified merchant links and terms                                                                                                    |
+| F5-028 Admin                  | Moderation, tag controls, pricing, verified claims, audit, product/operations metrics               | A real moderation process and monitored contact                                                                                      |
+| F5-029 Abuse prevention       | Origin checks, trusted identity, hashed limits, quotas, replay guards, optional Turnstile           | Production challenge keys, penetration review and larger-scale abuse signals                                                         |
+| F5-030 Recommendation v2      | Basic diversity, behavioral feedback and immutable diversity/serendipity diagnostics                | Advanced MMR, collaborative/hybrid ranking and contextual bandits are not implemented; validate data and baselines before that phase |
+
+## Concrete launch sequence
+
+| Gate                      | Measurable completion condition                                                                          | Current evidence                                                          |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Private technical preview | Functional English flows, reproducible tests/build, owner-only access, billing disabled                  | Local implementation verified; deployment recorded separately             |
+| Human closed beta         | 30 consenting human testers complete the protocol; record defects and actual response counts             | Not performed; automated fixtures do not count                            |
+| Approved catalog          | At least 100 independently owned, rights-cleared, moderated games with usable materials                  | 20 illustrative sample games; not 20 approvals                            |
+| Production readiness      | Real sign-in, admin allowlist, backup/restore drill, monitoring, load validation, operator/contact/terms | Local checks and configuration boundaries exist; operational gates remain |
+| Paid pilot                | Verified providers and callbacks, approved campaign, authorized payment/failure/refund reconciliation    | Contract and security fixture tests only; no money moved                  |
+| Public beta               | Approved catalog and readiness gates passed; explicit broader-access release                             | Not publicly launched                                                     |
+| Day 30                    | 200 games and 1,000 registered players, measured in the live product                                     | Not measured                                                              |
+| Day 90                    | Review retention, developer value and advertiser economics to continue/pivot/stop                        | Requires elapsed time and real cohorts                                    |
+
+The original plan targets a closed beta in 10 weeks and public beta in 12 weeks. These are planning targets, not elapsed periods or promises that recruitment/rights approval can be compressed into an implementation session. Anchor the schedule to the operator-approved launch date.
+
+## Success metrics
+
+| Metric                   | Plan target              | Implemented measurement                                                                                                          |
+| ------------------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Onboarding conversion    | At least 70%             | Completed profiles / eligible registered profiles; admin denominator shown                                                       |
+| Daily completion         | At least 55%             | Completed Daily sets / actually started sets in the seven-day creation cohort                                                    |
+| D7 retention             | At least 20%; 30% strong | Return in hours 168–192 after first live visit; only cohorts aged at least eight days                                            |
+| Positive Daily relevance | At least 70%             | Positive explicit relevance ratings / rated completed live sets                                                                  |
+| Developer return         | At least 60%             | Studio dashboard visit after one game version reaches 100 qualified first impressions                                            |
+| Developer iteration      | At least 20%             | New material revision or experiment after that milestone                                                                         |
+| Paying campaigns         | At least 10              | Paid non-test campaigns with funded impressions, excluding refunded states                                                       |
+| Advertiser repurchase    | At least 50%             | Advertisers with at least two paid non-test campaigns / paying advertisers                                                       |
+| Daily diversity          | Monitor                  | Mean pairwise cosine similarity on newly measured full live sets in the last 30 days                                             |
+| Serendipity              | Monitor                  | Would Play among explicitly rated qualified rounds outside the strongest selected genres, using the frozen assignment diagnostic |
+
+No metric is filled with a sample percentage to make the dashboard look successful. A missing denominator displays an unavailable value. Small samples, selection bias, and exact cohort definitions must accompany any business interpretation.
+
+## Human test protocol
+
+Ask each consenting tester to finish onboarding, complete all three mysteries, explain whether each clue was understandable, rate Daily relevance, save or reject a discovery, and verify the share image contains no spoilers. Include a mobile device, keyboard navigation, both themes, and at least one unavailable trailer scenario. Record anonymized task outcomes, bugs, duration, and consent; do not invent feedback or send invitations automatically.
+
+For developers, use their own rights-cleared game and target perception. Inspect reports only after the privacy floor, then observe whether the report leads to a material change or A/B test after a useful sample. Evaluate game-version cohorts separately from retests.
+
+## Explicit scope limits
+
+The MVP intentionally omits chat/DMs, native apps, cash rewards, direct video hosting, paid organic ranking, ad auctions, and heavy machine learning. Deferred learning algorithms, public recruitment, legal identity/terms, provider activation, production load results, and elapsed-time KPIs remain visible work. Their absence is not hidden behind “100% complete.”

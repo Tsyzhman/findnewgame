@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `experiments_one_open_game` ON `experiments` (`game_id`) WHERE "experiments"."status" IN ('active','pending_review');

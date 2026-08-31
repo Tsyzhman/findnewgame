@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788119168969,
+      "tag": "0000_loving_azazel",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788160794639,
+      "tag": "0001_gifted_johnny_blaze",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788163591950,
+      "tag": "0002_glorious_joseph",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788168249248,
+      "tag": "0003_curly_kang",
+      "breakpoints": true
+    }
+  ]
+}

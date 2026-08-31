@@ -1,0 +1,582 @@
+[
+  {
+    "id": "sample-1562430",
+    "steamAppId": 1562430,
+    "title": "DREDGE",
+    "developer": "Black Salt Games",
+    "publisher": "Team17",
+    "steamUrl": "https://store.steampowered.com/app/1562430/",
+    "releaseState": "released",
+    "description": "DREDGE is a single-player fishing adventure with a sinister undercurrent. Sell your catch, upgrade your boat, and dredge the depths for long-buried secrets. Explore a mysterious archipelago and discover why some things are best left forgotten.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1562430/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/header.jpg?t=1780479732",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/ss_70f88014423ed93eaa111c0d0daca2c500f76908.1920x1080.jpg?t=1780479732",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/ss_d4d4b14c5cd071307e27b4e9737f23f28b096248.1920x1080.jpg?t=1780479732",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/ss_9529104cde1af2ffbb715cab42bbb3012fb9b7d8.1920x1080.jpg?t=1780479732",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/ss_b60f2ff50997c5da29fcd783770053263aac26c0.1920x1080.jpg?t=1780479732",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1562430/ss_e964290b6a6a6941e299ba5be00fd3d98aec6d06.1920x1080.jpg?t=1780479732"
+    ],
+    "youtubeId": "BrRWb7tFxR8",
+    "tagIds": [21, 15564, 3834, 4166, 7432],
+    "targets": {
+      "genre": [21],
+      "core": [15564, 3834],
+      "mood": [4166, 7432]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1497440",
+    "steamAppId": 1497440,
+    "title": "COCOON",
+    "developer": "Geometric Interactive",
+    "publisher": "Annapurna Interactive",
+    "steamUrl": "https://store.steampowered.com/app/1497440/",
+    "releaseState": "released",
+    "description": "From Jeppe Carlsen, the lead gameplay designer of LIMBO and INSIDE — COCOON takes you on an adventure across worlds within worlds. Master world-leaping mechanics and solve intricate puzzles to unravel a cosmic mystery.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1497440/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/header.jpg?t=1763721043",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/ss_e1760582c4ed7da2bc737b878126864f83308ca0.1920x1080.jpg?t=1763721043",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/ss_33edba0e9cbf89a896e9ec2e9b2731303c4ea83a.1920x1080.jpg?t=1763721043",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/ss_33294bb3b7addea79361629d24023223dab0aa4c.1920x1080.jpg?t=1763721043",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/ss_515d6e054265fde30ca72373ffaefd50e9276fc2.1920x1080.jpg?t=1763721043",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/ss_c86c35b3d748565240b4d02879a18dd3ba0c18fd.1920x1080.jpg?t=1763721043"
+    ],
+    "youtubeId": "ybLUzOvdgDo",
+    "tagIds": [1664, 21, 3834, 6129, 4166, 1710],
+    "targets": {
+      "genre": [1664, 21],
+      "core": [3834, 6129],
+      "mood": [4166, 1710]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1455840",
+    "steamAppId": 1455840,
+    "title": "Dorfromantik",
+    "developer": "Toukana Interactive",
+    "publisher": "Toukana Interactive",
+    "steamUrl": "https://store.steampowered.com/app/1455840/",
+    "releaseState": "released",
+    "description": "Dorfromantik is a peaceful building strategy and puzzle game where you create a beautiful and ever-growing village landscape by placing tiles. Explore a variety of colorful biomes, discover and unlock new tiles and complete quests to fill your world with life!",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1455840/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/header.jpg?t=1786951108",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/ss_a49e5fcc5301e8a05a1da7ce233a5377cf680e98.1920x1080.jpg?t=1786951108",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/ss_5388583373f0895184a83c4db492e6f6dff5af2d.1920x1080.jpg?t=1786951108",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/ss_2232950021d44e7fab5ca387470d4dd909548080.1920x1080.jpg?t=1786951108",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/ss_7ea026a23427e733f6aa3b88bd1f06c1ad465852.1920x1080.jpg?t=1786951108",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/ss_137bc5e9ff3d2e08bed463e8ea2d09d8f255fe2e.1920x1080.jpg?t=1786951108"
+    ],
+    "youtubeId": "Tj1UzbFcCDU",
+    "tagIds": [4328, 1664, 1643, 9, 1654, 30358],
+    "targets": {
+      "genre": [4328, 1664],
+      "core": [1643, 9],
+      "mood": [1654, 30358]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1574580",
+    "steamAppId": 1574580,
+    "title": "Strange Horticulture",
+    "developer": "Bad Viking",
+    "publisher": "Iceberg Interactive",
+    "steamUrl": "https://store.steampowered.com/app/1574580/",
+    "releaseState": "released",
+    "description": "Strange Horticulture is an occult puzzle game in which you play as the proprietor of a local plant store. Find and identify new plants, pet your cat, speak to a coven, or join a cult. Use your collection of powerful plants to influence the story and unravel Undermere’s dark mysteries.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1574580/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/header.jpg?t=1772459223",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/ss_bdf4e7e6ab970f19c95ae96896e9457a95dbdf65.1920x1080.jpg?t=1772459223",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/ss_5cdbae50e4a7a86a1e4a6b462bafba22779dfc1b.1920x1080.jpg?t=1772459223",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/ss_741db5d7020d737ea8aba278e95f7111d7ca8f6e.1920x1080.jpg?t=1772459223",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/ss_d84ae4b75c238d5664a3bd4edfd74b0b687a1ce8.1920x1080.jpg?t=1772459223",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1574580/ss_2cfa1ea2e22ff257906c928cc2c4a04cf5e38ab5.1920x1080.jpg?t=1772459223"
+    ],
+    "youtubeId": "v69Jp10nLK8",
+    "tagIds": [1664, 599, 8369, 5716, 4166],
+    "targets": {
+      "genre": [1664, 599],
+      "core": [8369],
+      "mood": [5716, 4166]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1336490",
+    "steamAppId": 1336490,
+    "title": "Against the Storm",
+    "developer": "Eremite Games",
+    "publisher": "Hooded Horse",
+    "steamUrl": "https://store.steampowered.com/app/1336490/",
+    "releaseState": "released",
+    "description": "A dark fantasy city builder where you must rebuild civilization in the face of apocalyptic rains. As the Queen’s Viceroy, lead humans, beavers, lizards, foxes, and harpies to reclaim the wilderness and secure a future for civilization's last survivors.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1336490/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/4df5edc84dea5dae1269f3f95c2bd2cf22333af6/header.jpg?t=1787912000",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/ss_c7a8ad6065ddaa4789935d28d99e24c940c2181c.1920x1080.jpg?t=1787912000",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/ss_c5e7f55444d87f26921736f2d228c092f4dda5f2.1920x1080.jpg?t=1787912000",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/ss_1acb8473698a8801a83d5830c1dab3fde13dd781.1920x1080.jpg?t=1787912000",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/ss_c72741bd63e61c8d952fed96bd0ba6c554a665b1.1920x1080.jpg?t=1787912000",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/ss_60abf591b2639f3c3a3f11fcb131a5b69ebf230c.1920x1080.jpg?t=1787912000"
+    ],
+    "youtubeId": "-FtMh3ot9kQ",
+    "tagIds": [4328, 3959, 8945, 7332, 1684, 4604],
+    "targets": {
+      "genre": [4328, 3959],
+      "core": [8945, 7332],
+      "mood": [1684, 4604]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-2179850",
+    "steamAppId": 2179850,
+    "title": "Cobalt Core",
+    "developer": "Rocket Rat Games",
+    "publisher": "Brace Yourself Games",
+    "steamUrl": "https://store.steampowered.com/app/2179850/",
+    "releaseState": "released",
+    "description": "A sci-fi roguelike deckbuilder with a deep new single-axis spin on tactics games! Dodge missiles, line up your cannons, and blast 'em out of the sky... Then get to the bottom of these time loops, before it's too late!",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2179850/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2179850/header.jpg?t=1753747411",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2179850/ss_61d8442fc974476e7d4f5d521cb61a577995315f.1920x1080.jpg?t=1753747411",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2179850/ss_9accfa526e235a4a5ee331969f8a315cb67bb94f.1920x1080.jpg?t=1753747411",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2179850/ss_62a984c6b1eddb3316ce648981f0a3527702d345.1920x1080.jpg?t=1753747411",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2179850/ss_6087eccadbec96d9dbebe2d2f7a08af80c73fd1c.1920x1080.jpg?t=1753747411",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2179850/ss_72195592b11810ac9be63e505096678324717121.1920x1080.jpg?t=1753747411"
+    ],
+    "youtubeId": "OE8_dfMhlfo",
+    "tagIds": [1091588, 9, 32322, 4325, 3942, 4726],
+    "targets": {
+      "genre": [1091588, 9],
+      "core": [32322, 4325],
+      "mood": [3942, 4726]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1931770",
+    "steamAppId": 1931770,
+    "title": "Chants of Sennaar",
+    "developer": "Rundisc",
+    "publisher": "Focus Entertainment",
+    "steamUrl": "https://store.steampowered.com/app/1931770/",
+    "releaseState": "released",
+    "description": "In this award-winning puzzle adventure game, play as the Traveler on a quest to reunite the Peoples of the Tower. Observe, listen, and decipher ancient languages in a fascinating universe inspired by the Myth of Babel.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1931770/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/header.jpg?t=1774006124",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/ss_0461966d2cf288b631165c5e1e00399483bb52c7.1920x1080.jpg?t=1774006124",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/ss_0c7b55a542bab74ccb3bbab18346c0f68296ebf4.1920x1080.jpg?t=1774006124",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/ss_adcaa7de0b90bc02a927ec7119f889a0834e8484.1920x1080.jpg?t=1774006124",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/ss_d194cfba045634d86c99aec5ed7ecbf7270cb8a2.1920x1080.jpg?t=1774006124",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/ss_8315f825c350f04faba1cba86835d8fbb445191d.1920x1080.jpg?t=1774006124"
+    ],
+    "youtubeId": "__hzPH3tcvA",
+    "tagIds": [1664, 21, 3834, 8369, 4166, 5716],
+    "targets": {
+      "genre": [1664, 21],
+      "core": [3834, 8369],
+      "mood": [4166, 5716]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-2198150",
+    "steamAppId": 2198150,
+    "title": "Tiny Glade",
+    "developer": "Pounce Light",
+    "publisher": "Pounce Light",
+    "steamUrl": "https://store.steampowered.com/app/2198150/",
+    "releaseState": "released",
+    "description": "Tiny Glade is a small diorama builder where you doodle whimsical castles, cozy cottages &amp; romantic ruins. Explore gridless building chemistry as the game adorns your glades with procedural detail. No management, combat or goals: just kick back and turn forgotten meadows into lovable dioramas.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2198150/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/header.jpg?t=1782371576",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/ss_1a98b0d5e8111f100b3ececda8f682333337e3cb.1920x1080.jpg?t=1782371576",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/ss_6a8c7a510715796a659bd9fd828cc02cf73e11de.1920x1080.jpg?t=1782371576",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/ss_c9086858afd32f9c2bd49c164ddc2494af1e7f31.1920x1080.jpg?t=1782371576",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/ss_83248b45f1431127f94ab7bcfc246e5efb26848e.1920x1080.jpg?t=1782371576",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/ss_ed5a338f98da1acd76d232e581e7ca0c2e088958.1920x1080.jpg?t=1782371576"
+    ],
+    "youtubeId": "CdWpq2efN8Y",
+    "tagIds": [3810, 597, 1643, 1654, 30358],
+    "targets": {
+      "genre": [3810, 597],
+      "core": [1643],
+      "mood": [1654, 30358]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1593030",
+    "steamAppId": 1593030,
+    "title": "Terra Nil",
+    "developer": "Free Lives",
+    "publisher": "Devolver Digital",
+    "steamUrl": "https://store.steampowered.com/app/1593030/",
+    "releaseState": "released",
+    "description": "Terra Nil is an intricate environmental strategy game about transforming a barren wasteland into a thriving, balanced ecosystem. Bring life back to a lifeless world by purifying soil, cleaning oceans, planting trees, and reintroducing wildlife, then leave without a trace.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1593030/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593030/60d7b58280ba8d126365e4d5186ae497f6c10b39/header.jpg?t=1776447714",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593030/ss_6cd1cb55eaa724b291f669f8d9d17b88ecb1f2e9.1920x1080.jpg?t=1776447714",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593030/ss_f0d9c194f5889a0c2f4a847dd74ed8a229706662.1920x1080.jpg?t=1776447714",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593030/ss_14c9c35fca02d892c1279f904dcd2806a6429932.1920x1080.jpg?t=1776447714",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593030/ss_8b51d705d39e7c910484d8bf1176e1978d822dcc.1920x1080.jpg?t=1776447714",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593030/ss_8f514c29e5d93da9366a2a68199eb1ca69a98fb3.1920x1080.jpg?t=1776447714"
+    ],
+    "youtubeId": "wpX9MsuUmow",
+    "tagIds": [4328, 9, 8945, 1643, 1654, 30358],
+    "targets": {
+      "genre": [4328, 9],
+      "core": [8945, 1643],
+      "mood": [1654, 30358]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-2187290",
+    "steamAppId": 2187290,
+    "title": "Wall World",
+    "developer": "Alawar",
+    "publisher": "Alawar",
+    "steamUrl": "https://store.steampowered.com/app/2187290/",
+    "releaseState": "released",
+    "description": "Explore the mysterious Wall World on your giant robospider: mine for valuable resources, upgrade your equipment to fight off hordes of monsters, and discover exotic biomes in-between attacks. Will you be able to survive and learn the secrets of the Wall World?",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2187290/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2187290/header.jpg?t=1776425388",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2187290/ss_31b2c3d8283a6c69a4137aec6a57d7b7e33d890f.1920x1080.jpg?t=1776425388",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2187290/ss_bc9ea91eb3d9b56e11d1995d8d9c919e695c3753.1920x1080.jpg?t=1776425388",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2187290/ss_616e98bd7342b8f62b9ee18da5efb836b807c059.1920x1080.jpg?t=1776425388",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2187290/ss_9a0f4f651228a68b334233eaf1427e04eead5cf6.1920x1080.jpg?t=1776425388",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2187290/ss_d3739abd4da1601a2e936e6b01500c07ff9058a0.1920x1080.jpg?t=1776425388"
+    ],
+    "youtubeId": "ko2tnLLfA70",
+    "tagIds": [3959, 19, 5981, 8945, 3942, 4166],
+    "targets": {
+      "genre": [3959, 19],
+      "core": [5981, 8945],
+      "mood": [3942, 4166]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1677770",
+    "steamAppId": 1677770,
+    "title": "The Case of the Golden Idol",
+    "developer": "Color Gray Games",
+    "publisher": "Playstack",
+    "steamUrl": "https://store.steampowered.com/app/1677770/",
+    "releaseState": "released",
+    "description": "A new kind of detective game that allows you to think and investigate freely. Discover clues surrounding 12 strange and gruesome deaths and build your own theory. Pick your suspect, deduce the motive, unmask the awful truth.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1677770/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/71f6989b1a20b121d7ad64e1191fb65a9520c498/header.jpg?t=1786374001",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/ss_d817a8158f79e7881241f0d4470cd010f2fbe44f.1920x1080.jpg?t=1786374001",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/ss_e9593cf60f8e7fd96d205f5be6b45a487365fa29.1920x1080.jpg?t=1786374001",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/ss_ca307de7f24032327368d7d1718833331e481cc8.1920x1080.jpg?t=1786374001",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/ss_14f8ca6a582b71760770efdfac6cb38f7fcf4a98.1920x1080.jpg?t=1786374001",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677770/ss_003c853ecd98156ac5cc7378c16385fe5a677efd.1920x1080.jpg?t=1786374001"
+    ],
+    "youtubeId": "7yhUGJevw18",
+    "tagIds": [1664, 21, 8369, 5716, 5613],
+    "targets": {
+      "genre": [1664, 21],
+      "core": [8369],
+      "mood": [5716, 5613]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-553420",
+    "steamAppId": 553420,
+    "title": "TUNIC",
+    "developer": "TUNIC Team",
+    "publisher": "Finji",
+    "steamUrl": "https://store.steampowered.com/app/553420/",
+    "releaseState": "released",
+    "description": "Explore a land filled with lost legends, ancient powers, and ferocious monsters in TUNIC, an isometric action game about a small fox on a big adventure.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/553420/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/header.jpg?t=1783359656",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/ss_9c0184ba83022786f74f4a70ebae5c47d2a3c35c.1920x1080.jpg?t=1783359656",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/ss_5fc49d3c5fa34b0d0e6b6a5621f9062bec7ac4d7.1920x1080.jpg?t=1783359656",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/ss_04ac7db623d3e88751134eb87f5c465c392fa108.1920x1080.jpg?t=1783359656",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/ss_cce46eba03270e47fab2f955ec148c43f71fdb49.1920x1080.jpg?t=1783359656",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/ss_a19c43feb20d7c6aeda4e0bf6abb6e9ca10c3974.1920x1080.jpg?t=1783359656"
+    ],
+    "youtubeId": "lyLkt19pUWE",
+    "tagIds": [4106, 29482, 3834, 3993, 4726, 1684],
+    "targets": {
+      "genre": [4106, 29482],
+      "core": [3834, 3993],
+      "mood": [4726, 1684]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1092790",
+    "steamAppId": 1092790,
+    "title": "Inscryption",
+    "developer": "Daniel Mullins Games",
+    "publisher": "Devolver Digital",
+    "steamUrl": "https://store.steampowered.com/app/1092790/",
+    "releaseState": "released",
+    "description": "Inscryption is an inky black card-based odyssey that blends the deckbuilding roguelike, escape-room style puzzles, and psychological horror into a blood-laced smoothie. Darker still are the secrets inscrybed upon the cards...",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1092790/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/header.jpg?t=1777572925",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/ss_0191a69b0e94a9a7784f5b81e27f06379910645a.1920x1080.jpg?t=1777572925",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/ss_3b714682e9e0a214df1630a234e9f6764528eece.1920x1080.jpg?t=1777572925",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/ss_7bfe728822807d232398df1cb1a5d64addd3d8fb.1920x1080.jpg?t=1777572925",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/ss_79a146c36a3f0b728a8e0085327cec8c7fba82d6.1920x1080.jpg?t=1777572925",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/ss_738220c84b63522c4ca8c77fbff1ddb252ea0fe9.1920x1080.jpg?t=1777572925"
+    ],
+    "youtubeId": "Rl3NTzzw-2o",
+    "tagIds": [1091588, 1666, 32322, 791774, 1667, 5716],
+    "targets": {
+      "genre": [1091588, 1666],
+      "core": [32322, 791774],
+      "mood": [1667, 5716]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1970580",
+    "steamAppId": 1970580,
+    "title": "Backpack Hero",
+    "developer": "Jaspel",
+    "publisher": "Pretty Soon",
+    "steamUrl": "https://store.steampowered.com/app/1970580/",
+    "releaseState": "released",
+    "description": "The inventory management roguelike! Collect rare items, organize your backpack, and vanquish your foes!",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1970580/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1970580/header.jpg?t=1771527569",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1970580/ss_34b2c0a700a0b3486233b5d73d0643433593975e.1920x1080.jpg?t=1771527569",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1970580/ss_35d0be5367e06332d1e7f82bf3d21759c0697cb6.1920x1080.jpg?t=1771527569",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1970580/ss_e39025fae7fd8cc1f0f9c15cc7c66748e92d4773.1920x1080.jpg?t=1771527569",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1970580/ss_c7c33e8f7564465b8ccc1ac0ada1cd7f1f3cdf65.1920x1080.jpg?t=1771527569",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1970580/ss_c32b0f5d7a3efdb3d935f8090d8790afbcd18433.1920x1080.jpg?t=1771527569"
+    ],
+    "youtubeId": "XOq0gcJUckY",
+    "tagIds": [1716, 1720, 6276, 4325, 1684, 4726],
+    "targets": {
+      "genre": [1716, 1720],
+      "core": [6276, 4325],
+      "mood": [1684, 4726]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1948280",
+    "steamAppId": 1948280,
+    "title": "Stacklands",
+    "developer": "Sokpop Collective",
+    "publisher": "Sokpop Collective",
+    "steamUrl": "https://store.steampowered.com/app/1948280/",
+    "releaseState": "released",
+    "description": "Stacklands is a village builder where you stack cards to collect food, build structures, and fight creatures. 🃏 For example, dragging a Villager card on top of a Berry Bush card will spawn Berry cards which the villagers can eat to survive. 🃏 Play your cards right and expand your village!",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1948280/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1948280/header.jpg?t=1769357052",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1948280/ss_8a4eae84cdc5e8996a33d66c22f1537568654aaf.1920x1080.jpg?t=1769357052",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1948280/ss_962b1fd0961f54cd3b7c3f7a5181ef9f260ff1af.1920x1080.jpg?t=1769357052",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1948280/ss_bd3af9ad2dc489246661bb4fe0488a4ccacf7d3f.1920x1080.jpg?t=1769357052",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1948280/ss_4a2a44468bec65a6beb57138cdac779154fc4529.1920x1080.jpg?t=1769357052",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1948280/ss_c3d850ba32dc7ed66d5691966cef7e5724f6dfbc.1920x1080.jpg?t=1769357052"
+    ],
+    "youtubeId": "Q0416x-T28s",
+    "tagIds": [1666, 220585, 8945, 1643, 1654, 4726],
+    "targets": {
+      "genre": [1666, 220585],
+      "core": [8945, 1643],
+      "mood": [1654, 4726]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1637320",
+    "steamAppId": 1637320,
+    "title": "Dome Keeper",
+    "developer": "Bippinbits",
+    "publisher": "Raw Fury",
+    "steamUrl": "https://store.steampowered.com/app/1637320/",
+    "releaseState": "released",
+    "description": "Defend against waves of alien monsters in this unique roguelike action miner. Dig for resources, collect useful gadgets, and upgrade equipment to increase odds of survival – just hurry back before your dome is destroyed!",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1637320/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/334439c379674a719de3f12028f76977aeb176c6/header.jpg?t=1782455701",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/ss_f2a52537a6dc3458eadd0cfc40b3916b4eb70bae.1920x1080.jpg?t=1782455701",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/ss_b3718daa8a5e9bc8deddf5057a4723f36d73c83f.1920x1080.jpg?t=1782455701",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/ss_cc245dc6bc04cce2d3f2b3bd757eb32e84a894f0.1920x1080.jpg?t=1782455701",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/ss_d3d7194b248504bf0c1698752d2f6335900e777e.1920x1080.jpg?t=1782455701",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1637320/ss_7e8e99ca62ac48386cfa23b846c413ce311ce6c3.1920x1080.jpg?t=1782455701"
+    ],
+    "youtubeId": "AXTrCAlNzuY",
+    "tagIds": [1716, 1645, 5981, 8945, 3942, 4166],
+    "targets": {
+      "genre": [1716, 1645],
+      "core": [5981, 8945],
+      "mood": [3942, 4166]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1210320",
+    "steamAppId": 1210320,
+    "title": "Potion Craft: Alchemist Simulator",
+    "developer": "niceplay games",
+    "publisher": "tinyBuild",
+    "steamUrl": "https://store.steampowered.com/app/1210320/",
+    "releaseState": "released",
+    "description": "Potion Craft is an alchemist simulator where you physically interact with your tools and ingredients to brew potions. You're in full control of the whole shop: invent new recipes, attract customers and experiment to your heart's content. Just remember: the whole town is counting on you.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1210320/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/header.jpg?t=1786023837",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/ss_a5197ad5bb35e9899c9e751820cdb9dbc0ceb308.1920x1080.jpg?t=1786023837",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/ss_594f4f435a27c625e0f5c8d3603883c9e293b967.1920x1080.jpg?t=1786023837",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/ss_a0c1d496af8071557b72dae3dc3f7c01aa9d9c0a.1920x1080.jpg?t=1786023837",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/ss_f447d0b33536c3c8137eff3fd21be5126955c8b3.1920x1080.jpg?t=1786023837",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/ss_8f4f9d55123855952e4c83710b6801f6ffab1965.1920x1080.jpg?t=1786023837"
+    ],
+    "youtubeId": "iGNAAflyjac",
+    "tagIds": [599, 1702, 4202, 4172, 1654],
+    "targets": {
+      "genre": [599],
+      "core": [1702, 4202],
+      "mood": [4172, 1654]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-646570",
+    "steamAppId": 646570,
+    "title": "Slay the Spire",
+    "developer": "Mega Crit",
+    "publisher": "Mega Crit",
+    "steamUrl": "https://store.steampowered.com/app/646570/",
+    "releaseState": "released",
+    "description": "We fused card games and roguelikes together to make the best single player deckbuilder we could. Craft a unique deck, encounter bizarre creatures, discover relics of immense power, and Slay the Spire!",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/646570/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/header.jpg?t=1774015376",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/ss_c171816f7ecd35b5b46d2fa27532f4c5b8ca3cc5.1920x1080.jpg?t=1774015376",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/ss_01aa3e7759e457bfbf2422f31c325d7b3ba8a6eb.1920x1080.jpg?t=1774015376",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/ss_b757436d08ba08292796bfed9c60e7cc99d5f2c3.1920x1080.jpg?t=1774015376",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/ss_1299d7fe55771cf564848c5046fbef7936178440.1920x1080.jpg?t=1774015376",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/ss_8af73365121b1b1e2d8004fca2cbffb9b9f6d7a5.1920x1080.jpg?t=1774015376"
+    ],
+    "youtubeId": "9SZUtyYSOjQ",
+    "tagIds": [1091588, 9, 32322, 4325, 1684],
+    "targets": {
+      "genre": [1091588, 9],
+      "core": [32322, 4325],
+      "mood": [1684]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-287980",
+    "steamAppId": 287980,
+    "title": "Mini Metro",
+    "developer": "Dinosaur Polo Club",
+    "publisher": "Dinosaur Polo Club",
+    "steamUrl": "https://store.steampowered.com/app/287980/",
+    "releaseState": "released",
+    "description": "Mini Metro is a strategy simulation game about designing a subway map for a growing city. Draw lines between stations and start your trains running. As new stations open, redraw your lines to keep them efficient. Decide where to use your limited resources. How long can you keep the city moving?",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/287980/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287980/header.jpg?t=1724386220",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287980/ss_c7bc5df7e606504709e9f53ff9c7584ac4c01b18.1920x1080.jpg?t=1724386220",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287980/ss_540acc2e1e630b059c20e2887a22ca61eb323afe.1920x1080.jpg?t=1724386220",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287980/ss_f9561e067cc583fb8d39e8504aa94fecb2c1da21.1920x1080.jpg?t=1724386220",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287980/ss_0cf32a8483e4fa24b0953d80b778c915558a2a7f.1920x1080.jpg?t=1724386220",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287980/ss_a79dc2d5abc1c0f23cd83deb603da33e41a09e86.1920x1080.jpg?t=1724386220"
+    ],
+    "youtubeId": "Zbk_msu-iYI",
+    "tagIds": [1664, 599, 10383, 8945, 1654],
+    "targets": {
+      "genre": [1664, 599],
+      "core": [10383, 8945],
+      "mood": [1654]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  },
+  {
+    "id": "sample-1055540",
+    "steamAppId": 1055540,
+    "title": "A Short Hike",
+    "developer": "adamgryu",
+    "publisher": "adamgryu",
+    "steamUrl": "https://store.steampowered.com/app/1055540/",
+    "releaseState": "released",
+    "description": "Hike, climb, and soar through the peaceful mountainside landscapes of Hawk Peak Provincial Park as you make your way to the summit.",
+    "capsule": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1055540/library_hero.jpg",
+    "header": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/header.jpg?t=1777758958",
+    "screenshots": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/ss_f2123fea859e299736a3e99d130238c784d53e75.1920x1080.jpg?t=1777758958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/ss_0e864bf975bb71f238de6861fc8fd3d6ed6e4ce8.1920x1080.jpg?t=1777758958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/ss_a22817e259c4220cad0c25db315f417b6d3641b8.1920x1080.jpg?t=1777758958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/ss_c9c8a8e6062511c5ae9259c68c66754cd09ae971.1920x1080.jpg?t=1777758958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/ss_4c7c9650606ac7b451f8d2e5b71b503649e43edc.1920x1080.jpg?t=1777758958"
+    ],
+    "youtubeId": "usBVx4J4CUM",
+    "tagIds": [21, 3834, 15564, 1654, 30358],
+    "targets": {
+      "genre": [21, 3834],
+      "core": [3834, 15564],
+      "mood": [1654, 30358]
+    },
+    "isDemo": true,
+    "source": "Steam public store metadata; illustrative target tags, not developer-confirmed ground truth",
+    "fetchedAt": "2026-08-30T19:39:35.489Z"
+  }
+]

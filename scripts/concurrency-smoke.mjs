@@ -363,44 +363,170 @@ try {
     stageGuesses: rounds.length,
     qualifiedLiveResults: 0,
   };
-  await phase(
-    'Startup accepts the complete schema when a platform migration runner applied it first',
-    async () => {
-      await server.reset();
-      origin = (await server.listen()).url.origin;
-      worker = server.getWorker();
-      const { DB: preapplied } = await worker.getEnv();
-      for (const entry of journal.entries) {
-        assert.match(entry.tag, /^\d{4}_[a-z_]+$/);
-        const source = await readFile(
-          new URL(`../drizzle/${entry.tag}.sql`, import.meta.url),
-          'utf8',
-        );
-        const statements = source
-          .split('--> statement-breakpoint')
-          .map((part) => part.trim())
-          .filter(Boolean);
-        await preapplied.batch(
-          statements.map((sql) => preapplied.prepare(sql)),
-        );
-      }
-      const health = await call('health');
-      assert.equal(health.response.status, 200, JSON.stringify(health.data));
-      const versions = (
-        await preapplied
-          .prepare('SELECT version FROM schema_migrations ORDER BY version')
-          .all()
-      ).results.map((row) => row.version);
-      assert.deepEqual(
-        versions.filter((version) => /^\d{4}$/.test(version)),
-        journal.entries.map((entry) => entry.tag.slice(0, 4)),
-      );
-      assert.deepEqual(
-        (await preapplied.prepare('PRAGMA foreign_key_check').all()).results,
-        [],
-      );
-    },
+  const canonicalTags = JSON.parse(
+    await readFile(new URL('../data/steam_tags.json', import.meta.url), 'utf8'),
   );
+  const sampleGames = JSON.parse(
+    await readFile(new URL('../data/demo_games.json', import.meta.url), 'utf8'),
+  );
+  report.startupChecks = [];
+  for (const seededTagCount of [0, 100])
+    await phase(
+      seededTagCount === 0
+        ? 'Startup accepts the complete schema when a platform migration runner applied it first'
+        : 'Startup resumes a partial catalog without duplicate tags or lost moderation settings',
+      async () => {
+        await server.reset();
+        origin = (await server.listen()).url.origin;
+        worker = server.getWorker();
+        const { DB: preapplied } = await worker.getEnv();
+        for (const entry of journal.entries) {
+          assert.match(entry.tag, /^\d{4}_[a-z_]+$/);
+          const source = await readFile(
+            new URL(`../drizzle/${entry.tag}.sql`, import.meta.url),
+            'utf8',
+          );
+          const statements = source
+            .split('--> statement-breakpoint')
+            .map((part) => part.trim())
+            .filter(Boolean);
+          await preapplied.batch(
+            statements.map((sql) => preapplied.prepare(sql)),
+          );
+        }
+        await preapplied
+          .prepare(
+            'CREATE TABLE schema_migrations (version TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)',
+          )
+          .run();
+        const seededTags = canonicalTags.slice(0, seededTagCount);
+        for (let start = 0; start < seededTags.length; start += 50) {
+          await preapplied.batch(
+            seededTags
+              .slice(start, start + 50)
+              .map((tag) =>
+                preapplied
+                  .prepare(
+                    'INSERT INTO steam_tags (id,name,slug,category,payload_json,is_active,updated_at) VALUES (?,?,?,?,?,?,?)',
+                  )
+                  .bind(
+                    tag.id,
+                    tag.steam_name,
+                    tag.slug,
+                    tag.category,
+                    JSON.stringify(tag),
+                    tag.id === seededTags[0].id ? 0 : 1,
+                    1700000000000,
+                  ),
+              ),
+          );
+        }
+        assert.equal(
+          Number(
+            (
+              await preapplied
+                .prepare('SELECT COUNT(*) AS n FROM steam_tags')
+                .first()
+            ).n,
+          ),
+          seededTagCount,
+        );
+        assert.equal(
+          Number(
+            (
+              await preapplied
+                .prepare('SELECT COUNT(*) AS n FROM schema_migrations')
+                .first()
+            ).n,
+          ),
+          0,
+        );
+        const health = await call('health');
+        assert.equal(health.response.status, 200, JSON.stringify(health.data));
+        const versions = (
+          await preapplied
+            .prepare('SELECT version FROM schema_migrations ORDER BY version')
+            .all()
+        ).results.map((row) => row.version);
+        assert.deepEqual(
+          versions.filter((version) => /^\d{4}$/.test(version)),
+          journal.entries.map((entry) => entry.tag.slice(0, 4)),
+        );
+        assert.deepEqual(
+          (await preapplied.prepare('PRAGMA foreign_key_check').all()).results,
+          [],
+        );
+        const snapshot = async () => ({
+          tags: (
+            await preapplied
+              .prepare(
+                'SELECT id,name,slug,is_active FROM steam_tags ORDER BY id',
+              )
+              .all()
+          ).results,
+          games: (
+            await preapplied
+              .prepare('SELECT id,current_version_id FROM games ORDER BY id')
+              .all()
+          ).results,
+          versions: (
+            await preapplied
+              .prepare(
+                'SELECT id,game_id,version,presentation_hash FROM game_versions ORDER BY id',
+              )
+              .all()
+          ).results,
+          ledger: (
+            await preapplied
+              .prepare(
+                'SELECT version,applied_at FROM schema_migrations ORDER BY version',
+              )
+              .all()
+          ).results,
+        });
+        const initialized = await snapshot();
+        assert.equal(initialized.tags.length, canonicalTags.length);
+        assert.equal(initialized.games.length, sampleGames.length);
+        assert.equal(initialized.versions.length, sampleGames.length);
+        assert.equal(
+          new Set(initialized.tags.map((tag) => tag.id)).size,
+          canonicalTags.length,
+        );
+        assert.equal(
+          initialized.ledger.filter((row) =>
+            /^demo-catalog-[a-f0-9]{16}$/.test(row.version),
+          ).length,
+          1,
+        );
+        if (seededTagCount) {
+          assert.equal(
+            initialized.tags.find((tag) => tag.id === seededTags[0].id)
+              .is_active,
+            0,
+          );
+        }
+        const again = await call('health');
+        assert.equal(again.response.status, 200);
+        assert.deepEqual(
+          await snapshot(),
+          initialized,
+          'Repeated startup must not duplicate data or rewrite completed seed state.',
+        );
+        report.startupChecks.push({
+          preseededTags: seededTagCount,
+          finalTags: initialized.tags.length,
+          finalGames: initialized.games.length,
+          finalVersions: initialized.versions.length,
+          migrationVersions: versions.filter((version) =>
+            /^\d{4}$/.test(version),
+          ),
+          existingInactiveTagPreserved: seededTagCount ? true : null,
+          repeatedStartupUnchanged: true,
+          scope:
+            'New isolated database with a partial durable state; does not simulate a canceled request in an existing Worker isolate.',
+        });
+      },
+    );
   report.status = 'passed';
 } catch (error) {
   report.status = 'failed';

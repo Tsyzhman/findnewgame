@@ -36,7 +36,9 @@ The check exercises cold initialization, 128 interleaved Daily requests, cross-s
 
 A second fresh database receives all generated migrations before the application starts. This reproduces the platform-first migration order. The check verifies that application startup adopts the existing schema without adding columns twice. This caught the bootstrap parser's previous failure to recognize `d7_returned_at`; both the service regression and the compiled Worker now cover it.
 
-The report is `artifacts/concurrency-smoke.json`: request count, functional outcomes, local timing percentiles, and Node orchestrator memory. The measured run contains 309 requests. These are local observations on the sample catalog. They exclude the Sites gateway, static asset router, real login, external callbacks, distributed load, and child Worker process memory. They are not a latency SLA or evidence of 200 real players.
+A third fresh database starts with the same schema, 100 canonical tag rows, no games, and an empty application migration ledger. This matches the durable-state pattern found by the read-only hosted inspection. One local fixture tag is deliberately disabled to verify preservation of moderation settings. Initialization completes to 430 tags and 20 games without duplicates; foreign keys and migration records pass. Repeated health requests preserve the completed seed state. This exercises recovery on a new startup, not the fate of a canceled request's promise inside a still-running isolate.
+
+The report is `artifacts/concurrency-smoke.json`: request count, functional outcomes, local timing percentiles, and Node orchestrator memory. The measured run contains seven groups and 312 requests. These are local observations on the sample catalog. They exclude the Sites gateway, static asset router, real login, external callbacks, distributed load, and child Worker process memory. They are not a latency SLA or evidence of 200 real players.
 
 ## Hosted recovery gate
 

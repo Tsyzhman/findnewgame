@@ -50,6 +50,9 @@ before(async () => {
 });
 beforeEach(async () => {
   await db.prepare("UPDATE games SET status='withdrawn' WHERE is_demo=0").run();
+  await db
+    .prepare("DELETE FROM site_config WHERE key='discovery_policy'")
+    .run();
   await db.prepare("UPDATE ad_campaigns SET status='paused'").run();
   Object.assign(h.env, {
     CATALOG_MODE: 'live',
@@ -209,7 +212,9 @@ beforeEach(async () => {
   ).run();
 });
 
-test('D7 measures an observed exact-day return, excluding previews, anonymous users, and unaged cohorts', async () => {
+// Register the full file before yielding; Node owns these test promises.
+// Awaiting each registration can run the shared fixture cleanup too early.
+void test('D7 measures an observed exact-day return, excluding previews, anonymous users, and unaged cohorts', async () => {
   const day = 86400000,
     base = Date.now() - 9 * day,
     people = await Promise.all(Array.from({ length: 4 }, () => user()));
@@ -270,7 +275,208 @@ test('D7 measures an observed exact-day return, excluding previews, anonymous us
   );
 });
 
-test('launch discovery metrics require real starts and keep preference diagnostics frozen with each Daily', async () => {
+void test('discovery rollout is admin-only, audited, validated, and cannot rewrite assigned sets', async () => {
+  await Promise.all([game(), game(), game()]);
+  const player = await user(),
+    admin = await user('admin'),
+    initial = await h.discoverySettings(db);
+  const body = {
+    policy: 'linucb',
+    relevanceWeight: 0.7,
+    exploration: 0.4,
+    reason: 'Enable an isolated test rollout.',
+  };
+  await assert.rejects(
+    h.updateDiscoveryPolicy(db, player, body),
+    rejection(403),
+  );
+  await assert.rejects(
+    h.updateDiscoveryPolicy(db, admin, { ...body, relevanceWeight: 0.2 }),
+    rejection(400),
+  );
+  assert.deepEqual(await h.discoverySettings(db), initial);
+  const daily = await h.dailyFor(player),
+    stored = (
+      await sql(
+        'SELECT selection_json FROM daily_sets WHERE id=?',
+        daily.id,
+      ).first()
+    ).selection_json;
+  assert.equal((await h.exportAccount(player)).discovery.length, 0);
+  await h.updateDiscoveryPolicy(db, admin, body);
+  assert.equal((await h.adminOverview()).config.discovery.policy, 'linucb');
+  await h.dailyFor(player);
+  assert.equal(
+    (
+      await sql(
+        'SELECT selection_json FROM daily_sets WHERE id=?',
+        daily.id,
+      ).first()
+    ).selection_json,
+    stored,
+  );
+  const newcomer = await user(),
+    next = await h.dailyFor(newcomer),
+    decision = JSON.parse(
+      (
+        await sql(
+          'SELECT selection_json FROM daily_sets WHERE id=?',
+          next.id,
+        ).first()
+      ).selection_json,
+    );
+  assert.equal(decision.policy.requested, 'linucb');
+  assert.equal(decision.policy.applied, 'mmr');
+  assert.equal(decision.policy.feedbackSamples, 0);
+  assert.match(decision.policy.fallbackReason, /20/);
+  assert.ok(decision.decisions.every((row) => row.probability > 0));
+  const cohorts = await h.discoveryOutcomes(db);
+  assert.ok(cohorts.some((row) => row.policy === 'baseline' && row.sets >= 1));
+  assert.ok(cohorts.some((row) => row.policy === 'mmr' && row.fallbacks === 1));
+  const audit = await sql(
+    "SELECT admin_user_id,reason FROM moderation_actions WHERE target_type='discovery' ORDER BY created_at DESC LIMIT 1",
+  ).first();
+  assert.equal(audit.admin_user_id, admin.id);
+  assert.match(audit.reason, /baseline.*linucb.*isolated/);
+});
+
+async function discoveryFixture(g, player, index, options = {}) {
+  const now = Date.now(),
+    at = options.at ?? now - (index + 1) * 86400000,
+    date = new Date(at).toISOString().slice(0, 10),
+    setId = `learn-day-${++serial}`,
+    roundId = `learn-round-${++serial}`,
+    row = await sql('SELECT * FROM games WHERE id=?', g.id).first(),
+    features = options.features ?? [1, index % 2, 0.5, 0.2, 0, 0, 0, 0],
+    selection = {
+      policy: { featureVersion: 'affinity-v1' },
+      decisions: [{ gameId: g.id, features, probability: 0.2 }],
+    };
+  await db.batch([
+    sql(
+      "INSERT INTO daily_sets (id,user_id,local_date,timezone,reset_at,catalog_mode,algorithm_version,selection_json,created_at,completed_at) VALUES (?,?,?,'UTC',?,'live','fixture',?,?,?)",
+      setId,
+      player.id,
+      date,
+      at + 1000,
+      JSON.stringify(selection),
+      at,
+      at,
+    ),
+    sql(
+      "INSERT INTO daily_assignments (id,set_id,user_id,local_date,slot,game_id,developer_id,publisher_key,family_key,version_id,status,stage,created_at,completed_at) VALUES (?,?,?,?,1,?,?,?,?,?,'complete',1,?,?)",
+      roundId,
+      setId,
+      player.id,
+      date,
+      g.id,
+      row.developer_id,
+      row.publisher_key,
+      row.family_key,
+      row.current_version_id,
+      at,
+      at,
+    ),
+    sql(
+      "INSERT INTO quiz_final_results (assignment_id,game_id,user_id,version_id,score,accuracy,stage,result_json,qualified,repeat_exposure,completed_at) VALUES (?,?,?,?,0,0,1,'{}',?,?,?)",
+      roundId,
+      g.id,
+      player.id,
+      row.current_version_id,
+      options.qualified ?? 1,
+      options.repeat ?? 0,
+      at,
+    ),
+  ]);
+  if (options.rated !== false)
+    await h.interact(player, roundId, index % 2 ? 'would_play' : 'not_for_me');
+  return { setId, roundId, features };
+}
+
+void test('contextual learning uses distinct qualified live feedback, frozen context and current undo state', async () => {
+  const player = await user(),
+    games = [],
+    rounds = [];
+  for (let i = 0; i < 20; i++) {
+    const g = await game();
+    games.push(g);
+    rounds.push(await discoveryFixture(g, player, i));
+  }
+  const feedback = await h.discoveryFeedback(db, player);
+  assert.equal(feedback.length, 20);
+  const exported = await h.exportAccount(player);
+  assert.equal(exported.discovery.length, 20);
+  assert.ok(
+    exported.discovery.every(
+      (row) => Array.isArray(row.features) && !('gameId' in row),
+    ),
+  );
+  assert.equal(feedback.filter((row) => row.reward === 1).length, 10);
+  player.taste = { ...player.taste, genres: [tag('Sports')], mechanics: [] };
+  assert.deepEqual(await h.discoveryFeedback(db, player), feedback);
+  assert.deepEqual(await h.discoveryFeedback(db, await user()), []);
+  assert.deepEqual(
+    await h.discoveryFeedback(db, { ...player, isDemo: true }),
+    [],
+  );
+  await sql('UPDATE games SET is_demo=1 WHERE id=?', games[0].id).run();
+  assert.equal((await h.discoveryFeedback(db, player)).length, 19);
+  await sql('UPDATE games SET is_demo=0 WHERE id=?', games[0].id).run();
+  await h.interact(player, rounds[0].roundId, 'save');
+  assert.equal((await h.discoveryFeedback(db, player))[0].reward, 0);
+  await h.interact(player, rounds[0].roundId, 'not_for_me', false);
+  assert.equal((await h.discoveryFeedback(db, player))[0].reward, 1);
+  await h.interact(player, rounds[0].roundId, 'save', false);
+  assert.equal((await h.discoveryFeedback(db, player)).length, 19);
+  await h.interact(player, rounds[0].roundId, 'not_for_me');
+  await sql(
+    'UPDATE quiz_final_results SET accuracy=999,score=999999 WHERE user_id=?',
+    player.id,
+  ).run();
+  assert.deepEqual(await h.discoveryFeedback(db, player), feedback);
+  const excluded = [
+    { qualified: 0 },
+    { repeat: 1 },
+    { rated: false },
+    { features: [1] },
+    { at: Date.now() - 91 * 86400000 },
+  ];
+  for (let i = 0; i < excluded.length; i++)
+    await discoveryFixture(await game(), player, 22 + i, excluded[i]);
+  assert.equal((await h.discoveryFeedback(db, player)).length, 20);
+  await Promise.all([game(), game(), game()]);
+  await h.updateDiscoveryPolicy(db, await user('admin'), {
+    policy: 'linucb',
+    relevanceWeight: 0.7,
+    exploration: 0.4,
+    reason: 'Test activation only after real-shaped evidence.',
+  });
+  const next = await h.dailyFor(player),
+    decision = JSON.parse(
+      (
+        await sql(
+          'SELECT selection_json FROM daily_sets WHERE id=?',
+          next.id,
+        ).first()
+      ).selection_json,
+    );
+  assert.equal(decision.policy.applied, 'linucb');
+  assert.equal(decision.policy.feedbackSamples, 20);
+  assert.equal(decision.policy.fallbackReason, null);
+  assert.equal(next.slots.length, 3);
+  assert.ok(
+    decision.decisions.every(
+      (row) => row.probability > 0 && row.probability <= 1,
+    ),
+  );
+  await sql(
+    'UPDATE quiz_final_results SET qualified=0 WHERE assignment_id=?',
+    rounds[0].roundId,
+  ).run();
+  assert.equal((await h.discoveryFeedback(db, player)).length, 19);
+});
+
+void test('launch discovery metrics require real starts and keep preference diagnostics frozen with each Daily', async () => {
   const games = await Promise.all([game(), game(), game()]),
     player = await user(),
     before = await h.adminOverview();
@@ -320,7 +526,7 @@ test('launch discovery metrics require real starts and keep preference diagnosti
   assert.equal(metrics.measuredDailySets, before.metrics.measuredDailySets + 1);
 });
 
-test('developer value waits for a 100-person material version and ad repurchase excludes tests and refunds', async () => {
+void test('developer value waits for a 100-person material version and ad repurchase excludes tests and refunds', async () => {
   const g = await game(),
     baseline = await h.productMetrics(db);
   await h.developerDashboard(g.owner);
@@ -370,7 +576,7 @@ test('developer value waits for a 100-person material version and ad repurchase 
   assert.equal((await h.productMetrics(db)).advertiserRepeatRate, 0);
 });
 
-test('a verified sample studio claim requires a new rights-confirmed version before live approval', async () => {
+void test('a verified sample studio claim requires a new rights-confirmed version before live approval', async () => {
   const owner = await user(),
     admin = await user('admin'),
     sample = JSON.parse(
@@ -431,7 +637,7 @@ test('a verified sample studio claim requires a new rights-confirmed version bef
     1,
   );
 });
-test('team testers lose calibration qualification without gaining studio access or restoring old results on removal', async () => {
+void test('team testers lose calibration qualification without gaining studio access or restoring old results on removal', async () => {
   const g = await game(),
     member = await user(),
     day = await h.dailyFor(member);
@@ -459,7 +665,7 @@ test('team testers lose calibration qualification without gaining studio access 
   await h.updateStudioTeam(g.owner, { action: 'remove', userId: member.id });
   assert.equal((await h.calibrationReport(g.owner, g.id)).sampleSize, 0);
 });
-test('inactive targets cannot enter a Daily and disabling a genre never weakens an explicit exclusion', async () => {
+void test('inactive targets cannot enter a Daily and disabling a genre never weakens an explicit exclusion', async () => {
   const g = await game(),
     target = g.body.targets.genre[0];
   await sql('UPDATE steam_tags SET is_active=0 WHERE id=?', target).run();
@@ -492,7 +698,7 @@ test('inactive targets cannot enter a Daily and disabling a genre never weakens 
     await sql('UPDATE steam_tags SET is_active=1 WHERE id=?', fps).run();
   }
 });
-test('the final description clue redacts a literal title while the completed reveal retains original content', async () => {
+void test('the final description clue redacts a literal title while the completed reveal retains original content', async () => {
   const g = await game(),
     title = 'Test Game [2] + (Demo)',
     description = `${title} is a mystery. Discover ${title} through careful exploration.`;
@@ -533,7 +739,7 @@ test('the final description clue redacts a literal title while the completed rev
   });
   assert.equal(final.result.game.description, description);
 });
-test('stale moderation cannot approve replaced game materials or reopen a completed experiment', async () => {
+void test('stale moderation cannot approve replaced game materials or reopen a completed experiment', async () => {
   const g = await game(),
     old = await h.ownedGame(g.owner, g.id),
     exp = await h.createExperiment(g.owner, {
@@ -581,7 +787,7 @@ test('stale moderation cannot approve replaced game materials or reopen a comple
     'completed',
   );
 });
-test('intent reporting remains tied to the reacted-to material version', async () => {
+void test('intent reporting remains tied to the reacted-to material version', async () => {
   const g = await game(),
     old = (await h.ownedGame(g.owner, g.id)).current_version_id;
   for (let i = 0; i < 20; i++) {
@@ -624,7 +830,7 @@ test('intent reporting remains tied to the reacted-to material version', async (
   assert.equal((await h.calibrationReport(g.owner, g.id)).wouldPlay, 0);
   assert.equal((await h.calibrationReport(g.owner, g.id, old)).wouldPlay, 100);
 });
-test('image reservations enforce the account quota under concurrency and recover absent stale uploads', async () => {
+void test('image reservations enforce the account quota under concurrency and recover absent stale uploads', async () => {
   const owner = await user(),
     now = Date.now(),
     png = Buffer.from(
@@ -691,7 +897,7 @@ test('image reservations enforce the account quota under concurrency and recover
     1,
   );
 });
-test('expired-data maintenance preserves signed-in profiles and active anonymous sessions', async () => {
+void test('expired-data maintenance preserves signed-in profiles and active anonymous sessions', async () => {
   const permanent = await user(),
     expired = await user(),
     active = await user(),
@@ -719,7 +925,7 @@ test('expired-data maintenance preserves signed-in profiles and active anonymous
   assert.ok(await sql('SELECT id FROM users WHERE id=?', permanent.id).first());
   assert.ok(await sql('SELECT id FROM users WHERE id=?', active.id).first());
 });
-test('operator price and tag edits record the actor and preserve immutable identifiers', async () => {
+void test('operator price and tag edits record the actor and preserve immutable identifiers', async () => {
   const admin = await user('admin'),
     unused = await sql(
       "SELECT id,name FROM steam_tags t WHERE NOT EXISTS (SELECT 1 FROM game_versions v,json_each(v.content_json,'$.tagIds') j WHERE j.value=t.id) LIMIT 1",
@@ -744,7 +950,7 @@ test('operator price and tag edits record the actor and preserve immutable ident
     logs.results.some((row) => row.reason.includes('Changed from 1 to 2')),
   );
 });
-test('daily assignments remain identical under competing requests and satisfy database uniqueness', async () => {
+void test('daily assignments remain identical under competing requests and satisfy database uniqueness', async () => {
   await game();
   await game();
   await game();
@@ -765,7 +971,7 @@ test('daily assignments remain identical under competing requests and satisfy da
     3,
   );
 });
-test('quiz response withholds answers, gates later assets, checks ownership, speed, and stage', async () => {
+void test('quiz response withholds answers, gates later assets, checks ownership, speed, and stage', async () => {
   const g = await game(),
     player = await user(),
     stranger = await user(),
@@ -802,7 +1008,7 @@ test('quiz response withholds answers, gates later assets, checks ownership, spe
     rejection(409, 'stage_conflict'),
   );
 });
-test('all six clues advance once under retries; scores are server-owned and final results immutable', async () => {
+void test('all six clues advance once under retries; scores are server-owned and final results immutable', async () => {
   const g = await game(),
     player = await user(),
     day = await h.dailyFor(player),
@@ -860,7 +1066,7 @@ test('all six clues advance once under retries; scores are server-owned and fina
     'one available game is not a complete three-game Daily',
   );
 });
-test('three zero-score reveals complete a Daily and award the streak once', async () => {
+void test('three zero-score reveals complete a Daily and award the streak once', async () => {
   await game();
   await game();
   await game();
@@ -886,7 +1092,7 @@ test('three zero-score reveals complete a Daily and award the streak once', asyn
     3,
   );
 });
-test('saving and following are idempotent and correctness never mutates taste', async () => {
+void test('saving and following are idempotent and correctness never mutates taste', async () => {
   const g = await game(),
     player = await user(),
     before = await sql(
@@ -930,7 +1136,7 @@ test('saving and following are idempotent and correctness never mutates taste', 
     0,
   );
 });
-test('target edits create immutable versions and old assigned rounds retain their exact materials', async () => {
+void test('target edits create immutable versions and old assigned rounds retain their exact materials', async () => {
   const g = await game(),
     player = await user(),
     day = await h.dailyFor(player),
@@ -975,7 +1181,7 @@ test('target edits create immutable versions and old assigned rounds retain thei
     rejection(400),
   );
 });
-test('only one open experiment survives concurrent proposals', async () => {
+void test('only one open experiment survives concurrent proposals', async () => {
   const g = await game(),
     body = {
       gameId: g.id,
@@ -998,7 +1204,7 @@ test('only one open experiment survives concurrent proposals', async () => {
     1,
   );
 });
-test('explicit retests use changed variant B once and never repeat an existing cohort', async () => {
+void test('explicit retests use changed variant B once and never repeat an existing cohort', async () => {
   const g = await game(),
     player = await user();
   const expire = async (days) => {
@@ -1058,7 +1264,7 @@ test('explicit retests use changed variant B once and never repeat an existing c
   ).run();
   assert.equal((await h.dailyFor(player)).slots.length, 0);
 });
-test('calibration stays suppressed at 19 independent participants and opens at 20 without personal identifiers', async () => {
+void test('calibration stays suppressed at 19 independent participants and opens at 20 without personal identifiers', async () => {
   const g = await game();
   for (let i = 0; i < 19; i++) {
     const p = await user(),
@@ -1082,7 +1288,7 @@ test('calibration stays suppressed at 19 independent participants and opens at 2
   await finishRound(g.owner, ownDay.slots[0].id, g.body.targets);
   assert.equal((await h.calibrationReport(g.owner, g.id)).sampleSize, 20);
 });
-test('viewable impressions honor the continuous interval, frequency cap, and final available budget under contention', async () => {
+void test('viewable impressions honor the continuous interval, frequency cap, and final available budget under contention', async () => {
   const g = await game(),
     advertiser = await user();
   await h.createDeveloper(advertiser, { name: `Test advertiser ${++serial}` });
@@ -1144,7 +1350,7 @@ test('viewable impressions honor the continuous interval, frequency cap, and fin
     1,
   );
 });
-test('invoice reservation is atomic and replayed Lava callbacks provision exactly once', async () => {
+void test('invoice reservation is atomic and replayed Lava callbacks provision exactly once', async () => {
   const g = await game(),
     c = await campaign(g.owner);
   await h.moderate(g.admin, {
@@ -1214,7 +1420,7 @@ test('invoice reservation is atomic and replayed Lava callbacks provision exactl
     rejection(401),
   );
 });
-test('Tribute donations deduplicate and verified purchases reconcile once with refunds terminal', async () => {
+void test('Tribute donations deduplicate and verified purchases reconcile once with refunds terminal', async () => {
   h.env.TRIBUTE_API_KEY = 'test-tribute-only';
   const donation = {
     name: 'new_donation',
@@ -1288,7 +1494,7 @@ test('Tribute donations deduplicate and verified purchases reconcile once with r
     'paused',
   );
 });
-test('image uploads deduplicate by owner and content, reject unsafe types, and remain private before publication', async () => {
+void test('image uploads deduplicate by owner and content, reject unsafe types, and remain private before publication', async () => {
   const owner = await user(),
     other = await user(),
     bytes = Uint8Array.from(
@@ -1334,7 +1540,7 @@ test('image uploads deduplicate by owner and content, reject unsafe types, and r
     rejection(415),
   );
 });
-test('CSRF and rate limits reject cross-site writes and bursts with hashed persistent keys', async () => {
+void test('CSRF and rate limits reject cross-site writes and bursts with hashed persistent keys', async () => {
   assert.throws(
     () =>
       h.assertSameOrigin(
@@ -1372,7 +1578,7 @@ test('CSRF and rate limits reject cross-site writes and bursts with hashed persi
     rejection(400),
   );
 });
-test('account deletion cascades personal history and withdraws games without deleting payment records', async () => {
+void test('account deletion cascades personal history and withdraws games without deleting payment records', async () => {
   const g = await game(),
     day = await h.dailyFor(g.owner);
   await finishRound(g.owner, day.slots[0].id, g.body.targets);

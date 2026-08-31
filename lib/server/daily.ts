@@ -18,6 +18,7 @@ import {
   tags as canonicalTags,
 } from './database';
 import { requireCondition } from './security';
+import { discoveryFeedback, discoverySettings } from './discovery-policy';
 
 type CandidateRow = {
   id: string;
@@ -149,6 +150,11 @@ export async function dailyFor(user: PublicUser): Promise<DailyView> {
           };
       }
       const activeTagIds = new Set(tags.map((tag) => tag.id));
+      const settings = await discoverySettings(db);
+      const feedback =
+        settings.policy === 'linucb' && mode === 'live'
+          ? await discoveryFeedback(db, user, now)
+          : [];
       const result = selectDaily({
         games: games.filter((game) =>
           Object.values(game.content.targets)
@@ -161,6 +167,9 @@ export async function dailyFor(user: PublicUser): Promise<DailyView> {
         seenFamilyKeys: new Set(seen.map((s) => s.family_key)),
         behavior,
         now,
+        settings,
+        feedback,
+        liveFeedback: mode === 'live' && !user.isDemo,
       });
       const setId = id('day-');
       const statements: D1PreparedStatement[] = [
@@ -175,7 +184,9 @@ export async function dailyFor(user: PublicUser): Promise<DailyView> {
             user.timezone,
             nextLocalMidnight(now, user.timezone),
             mode,
-            CONFIG.algorithmVersion,
+            result.policy.applied === 'baseline'
+              ? CONFIG.algorithmVersion
+              : `taste-${result.policy.applied}-v1.0`,
             JSON.stringify({
               threshold: result.threshold,
               eligible: result.eligibleCount,
@@ -183,6 +194,8 @@ export async function dailyFor(user: PublicUser): Promise<DailyView> {
               expanded: result.expanded,
               meanPairwiseSimilarity: result.meanPairwiseSimilarity,
               outsideFocusGameIds: result.outsideFocusGameIds,
+              policy: result.policy,
+              decisions: result.decisions,
             }),
             now,
           ),

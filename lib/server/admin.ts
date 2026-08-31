@@ -5,6 +5,7 @@ import { parseSteamUrl, requireCondition, textField } from './security';
 import { CONFIG } from '@/lib/config';
 import { cleanTransientData } from './maintenance';
 import { productMetrics } from './product-metrics';
+import { discoveryOutcomes, discoverySettings } from './discovery-policy';
 
 export async function adminOverview() {
   const db = await database(),
@@ -17,6 +18,7 @@ export async function adminOverview() {
     counts,
     exposures,
     measurements,
+    discovery,
     unmatched,
     audit,
     price,
@@ -56,6 +58,7 @@ export async function adminOverview() {
       "SELECT g.id,COUNT(r.assignment_id) n FROM games g LEFT JOIN quiz_final_results r ON r.game_id=g.id AND r.qualified=1 AND r.repeat_exposure=0 WHERE g.status='published' AND g.is_demo=0 GROUP BY g.id ORDER BY n",
     ),
     productMetrics(db, now),
+    discoveryOutcomes(db, now),
     all(
       db,
       "SELECT id,provider,external_payment_id,amount_cents,currency,status,created_at FROM payments WHERE purpose='unmatched' ORDER BY created_at DESC LIMIT 50",
@@ -92,6 +95,7 @@ export async function adminOverview() {
     reports,
     unmatchedPayments: unmatched,
     audit,
+    discovery,
     metrics: {
       ...counts,
       ...measurements,
@@ -120,6 +124,7 @@ export async function adminOverview() {
       turnstileEnabled: !!env.TURNSTILE_SECRET_KEY,
       localMode: import.meta.env.DEV,
       impressionPriceCents: Number(price?.value_json ?? 1),
+      discovery: await discoverySettings(db),
     },
     limits: { qualifiedTarget: 100, privacyThreshold: 20 },
   };

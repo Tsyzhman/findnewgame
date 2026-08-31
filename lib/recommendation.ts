@@ -1,4 +1,15 @@
 import { CONFIG } from './config.ts';
+import {
+  BANDIT,
+  DEFAULT_DISCOVERY,
+  discoveryProbabilities,
+  fitLinearBandit,
+  linearPrediction,
+  parseDiscoverySettings,
+  type BanditObservation,
+  type DiscoveryPolicy,
+  type DiscoverySettings,
+} from './discovery-policy.ts';
 import type {
   CandidateGame,
   DiscoveryMode,
@@ -95,6 +106,9 @@ export interface SelectionInput {
   behavior?: Record<number, number>;
   now?: number;
   random?: () => number;
+  settings?: DiscoverySettings;
+  feedback?: BanditObservation[];
+  liveFeedback?: boolean;
 }
 export interface SelectionResult {
   games: CandidateGame[];
@@ -105,11 +119,49 @@ export interface SelectionResult {
   scores: Record<string, number>;
   meanPairwiseSimilarity: number | null;
   outsideFocusGameIds: string[] | null;
+  policy: {
+    requested: DiscoveryPolicy;
+    applied: DiscoveryPolicy;
+    featureVersion: string;
+    feedbackSamples: number;
+    positives: number;
+    negatives: number;
+    fallbackReason: string | null;
+    relevanceWeight: number;
+    exploration: number;
+  };
+  decisions: {
+    gameId: string;
+    features: number[];
+    probability: number | null;
+  }[];
 }
 
 export function selectDaily(input: SelectionInput): SelectionResult {
   const random = input.random ?? secureRandom;
   const now = input.now ?? Date.now();
+  const settings = parseDiscoverySettings(input.settings) ?? {
+    ...DEFAULT_DISCOVERY,
+  };
+  const model = fitLinearBandit(
+    settings.policy === 'linucb' && input.liveFeedback
+      ? (input.feedback ?? [])
+      : [],
+  );
+  let policy = settings.policy,
+    fallbackReason: string | null = null;
+  if (policy === 'linucb') {
+    if (!input.liveFeedback)
+      fallbackReason = 'Live independent feedback is required.';
+    else if (model.samples < BANDIT.minimumSamples)
+      fallbackReason = 'At least 20 rated independent games are required.';
+    else if (
+      Math.min(model.positives, model.negatives) < BANDIT.minimumPerOutcome
+    )
+      fallbackReason =
+        'At least three positive and three negative outcomes are required.';
+    if (fallbackReason) policy = 'mmr';
+  }
   const catalog = new Map(input.tags.map((tag) => [tag.id, tag]));
   const hardGenre = new Set(
     input.taste.hardNo.filter((id) =>
@@ -148,6 +200,56 @@ export function selectDaily(input: SelectionInput): SelectionResult {
   const scores = Object.fromEntries(
     eligible.map((g) => [g.id, cosine(user, vectors.get(g.id)!)]),
   );
+  const positive = new Map([...user].filter(([, weight]) => weight > 0));
+  const negative = new Map(
+    [...user]
+      .filter(([, weight]) => weight < 0)
+      .map(([id, weight]) => [id, -weight]),
+  );
+  const categoryGroups = [
+    ['genre', 'subgenre'],
+    ['mechanic'],
+    ['mood'],
+    ['visual'],
+    ['player'],
+  ];
+  const groupedUser = categoryGroups.map(
+    (categories) =>
+      new Map(
+        [...positive].filter(([id]) =>
+          categories.includes(catalog.get(id)?.category ?? ''),
+        ),
+      ),
+  );
+  const contexts = new Map<string, number[]>();
+  const learnedScores = new Map<string, number>();
+  const contextFor = (game: CandidateGame) => {
+    let context = contexts.get(game.id);
+    if (!context) {
+      const vector = vectors.get(game.id)!;
+      context = [
+        1,
+        Math.max(0, cosine(positive, vector)),
+        ...categoryGroups.map((categories, i) =>
+          Math.max(
+            0,
+            cosine(
+              groupedUser[i],
+              new Map(
+                [...vector].filter(([id]) =>
+                  categories.includes(catalog.get(id)?.category ?? ''),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Math.max(0, cosine(negative, vector)),
+      ].map((value) => Math.max(0, Math.min(1, value)));
+      contexts.set(game.id, context);
+    }
+    return context;
+  };
+  const decisions: SelectionResult['decisions'] = [];
   const sorted = Object.values(scores).sort((a, b) => a - b);
   const initialThreshold = quantile(
     sorted,
@@ -193,8 +295,55 @@ export function selectDaily(input: SelectionInput): SelectionResult {
       relevant = eligible.filter((g) => scores[g.id] >= threshold);
       continue;
     }
-    let candidate = draw(pool);
-    for (let attempt = 0; attempt < CONFIG.diversityAttempts; attempt++) {
+    let candidate: CandidateGame,
+      probability: number | null = null;
+    if (policy !== 'baseline') {
+      const probabilities = discoveryProbabilities(
+        pool.map((game) => {
+          let relevance = Math.max(0, scores[game.id]);
+          if (policy === 'linucb') {
+            let learned = learnedScores.get(game.id);
+            if (learned === undefined) {
+              const prediction = linearPrediction(model, contextFor(game));
+              learned = Math.max(
+                0,
+                Math.min(
+                  1,
+                  prediction.mean +
+                    settings.exploration * prediction.uncertainty,
+                ),
+              );
+              learnedScores.set(game.id, learned);
+            }
+            relevance = 0.65 * relevance + 0.35 * learned;
+          }
+          return {
+            relevance,
+            redundancy: Math.max(
+              0,
+              ...chosen.map((other) =>
+                cosine(vectors.get(other.id)!, vectors.get(game.id)!),
+              ),
+            ),
+            impressions: game.qualifiedImpressions,
+          };
+        }),
+        settings.relevanceWeight,
+      );
+      let target = Math.max(0, Math.min(0.999999999, random())),
+        index = 0;
+      for (; index < pool.length - 1; index++) {
+        target -= probabilities[index];
+        if (target < 0) break;
+      }
+      candidate = pool[index];
+      probability = probabilities[index];
+    } else candidate = draw(pool);
+    for (
+      let attempt = 0;
+      policy === 'baseline' && attempt < CONFIG.diversityAttempts;
+      attempt++
+    ) {
       if (
         chosen.every(
           (g) =>
@@ -216,6 +365,11 @@ export function selectDaily(input: SelectionInput): SelectionResult {
       candidate = draw(alternatives);
     }
     chosen.push(candidate);
+    decisions.push({
+      gameId: candidate.id,
+      features: contextFor(candidate),
+      probability,
+    });
     developers.add(candidate.developerId);
     if (candidate.publisherKey) publishers.add(candidate.publisherKey);
     families.add(candidate.familyKey);
@@ -244,6 +398,18 @@ export function selectDaily(input: SelectionInput): SelectionResult {
     relevantCount: relevant.length,
     expanded: threshold < initialThreshold,
     scores,
+    policy: {
+      requested: settings.policy,
+      applied: policy,
+      featureVersion: BANDIT.featureVersion,
+      feedbackSamples: model.samples,
+      positives: model.positives,
+      negatives: model.negatives,
+      fallbackReason,
+      relevanceWeight: settings.relevanceWeight,
+      exploration: settings.exploration,
+    },
+    decisions,
     meanPairwiseSimilarity: pairwise.length
       ? pairwise.reduce((sum, value) => sum + value, 0) / pairwise.length
       : null,

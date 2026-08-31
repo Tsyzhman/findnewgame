@@ -155,6 +155,7 @@ export async function exportAccount(user: PublicUser) {
     payments,
     activity,
     studioActivity,
+    discovery,
   ] = await Promise.all([
     all(
       db,
@@ -191,6 +192,23 @@ export async function exportAccount(user: PublicUser) {
       'SELECT name,last_dashboard_at FROM developers WHERE owner_user_id=?',
       user.id,
     ),
+    all<{
+      local_date: string;
+      roundId: string;
+      slot: number;
+      policy: string;
+      features: string;
+      probability: number | null;
+    }>(
+      db,
+      `SELECT d.local_date,a.id roundId,a.slot,json_extract(d.selection_json,'$.policy') policy,
+      json_extract(c.value,'$.features') features,json_extract(c.value,'$.probability') probability
+      FROM daily_sets d JOIN daily_assignments a ON a.set_id=d.id
+      JOIN json_each(d.selection_json,'$.decisions') c ON json_extract(c.value,'$.gameId')=a.game_id
+      WHERE d.user_id=? AND a.status='complete' AND json_type(d.selection_json,'$.policy')='object'
+      AND json_type(c.value,'$.features')='array' ORDER BY d.local_date,a.slot`,
+      user.id,
+    ),
   ]);
   return {
     exportedAt: new Date().toISOString(),
@@ -202,6 +220,11 @@ export async function exportAccount(user: PublicUser) {
     payments,
     activity,
     studioActivity,
+    discovery: discovery.map((row) => ({
+      ...row,
+      policy: JSON.parse(String(row.policy)),
+      features: JSON.parse(String(row.features)),
+    })),
   };
 }
 export async function deleteAccount(

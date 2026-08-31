@@ -75,6 +75,7 @@ import {
   claimSampleStudio,
 } from '@/lib/server/admin';
 import { roundAsset, uploadedAsset, uploadImage } from '@/lib/server/assets';
+import { updateDiscoveryPolicy } from '@/lib/server/discovery-policy';
 
 export const dynamic = 'force-dynamic';
 type Context = { params: Promise<{ path: string[] }> };
@@ -324,6 +325,14 @@ async function handler(request: Request, context: Context): Promise<Response> {
         return response(await updateTag(user, await jsonBody(request)));
       if (route === 'admin/price' && method === 'PATCH')
         return response(await updatePrice(user, await jsonBody(request)));
+      if (route === 'admin/discovery' && method === 'PATCH')
+        return response(
+          await updateDiscoveryPolicy(
+            await database(),
+            user,
+            await jsonBody(request),
+          ),
+        );
       if (route === 'admin/fund-test' && method === 'POST')
         return response(
           await fundTestCampaign(String((await jsonBody(request)).campaignId)),

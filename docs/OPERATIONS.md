@@ -21,7 +21,13 @@ Runtime environment belongs in Sites, or an ignored local `.env`, never in the h
 | `TRIBUTE_DONATION_URL` | Verified creator donation link on an allowed host            | No                             |
 | `MAINTENANCE_TOKEN`    | Optional bearer credential for external maintenance          | Yes                            |
 
-Never promote the first arbitrary user to admin. Use the verified owner identity. Removing an admin from the allowlist removes admin privileges on the next authenticated request. Studio team membership excludes testing; it does not grant the owner dashboard to another account.
+Never promote the first arbitrary user to admin. Use the verified owner identity. Removing an admin from the allowlist removes admin privileges on the next authenticated request. Studio team membership excludes their results from calibrated analytics and recommendation learning; it does not prevent play or grant the owner dashboard to another account.
+
+## Recommendation rollout
+
+Keep **Personalized random · baseline** selected in Admin → Operations for the initial launch check. The optional MMR and contextual policies affect only future Daily sets and require an audit reason. Contextual exploration falls back to MMR until each player has enough qualified live feedback; sample outcomes cannot satisfy that gate.
+
+Use the [discovery policy guide](DISCOVERY_POLICIES.md) for parameter limits, measurement, and rollback. Review the separate 30-day policy cohorts as observational reports, not evidence of causal improvement. Roll back through the same control without rewriting existing assignments or historical decisions.
 
 ## Catalog onboarding
 
@@ -73,6 +79,6 @@ The audit counts nested caches separately from `node_modules`; those byte counts
 
 ## Release checks
 
-Run lint, typecheck, all tests, the contrast audit, dependency audit, local HTTP checks, and a production build. Use the Sites packaging workflow with the exact validated source and generated migrations. Verify the returned deployment status and preserve the same user-facing browser tab. Do not upload `.env`, `.wrangler`, test accounts, downloaded account exports, or dependency/cache folders.
+Run lint, typecheck, all tests, the contrast audit, dependency audit, local HTTP checks, a production build, and `npm run test:production`. The compiled test uses native Worker dispatch; the standalone Wrangler HTTP-proxy limitation is recorded in [verification](VERIFICATION.md). Run the synthetic discovery benchmark after recommendation changes and label its limits. Restore local policy controls to baseline after QA. Use the Sites packaging workflow with the exact validated source and generated migrations. Verify the returned deployment status and preserve the same user-facing browser tab. Do not upload `.env`, `.wrangler`, test accounts, downloaded account exports, or dependency/cache folders.
 
 After a successful deployment, check the home page, `/api/health`, sign-in/account, demo flow, and authorized admin access. Retain owner-only access until the launch gates in [plan coverage](PLAN_COVERAGE.md) are met and broader access is authorized.

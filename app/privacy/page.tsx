@@ -37,6 +37,15 @@ export default function PrivacyPage() {
           browsing history. They are included in your account export.
         </p>
         <p>
+          A Daily also keeps a compact record of its discovery policy and tag
+          affinity at assignment time. If contextual exploration is enabled, it
+          learns only from your own recent eligible ratings and saved, followed,
+          or opened games. Missing feedback and quiz accuracy are not dislikes
+          or rewards. Completed-round decision records are included in your
+          export and removed with your account; there is no shared model
+          containing other players’ histories.
+        </p>
+        <p>
           Anonymous demos use a random, HttpOnly session cookie. Demo accounts
           expire after 24 hours and are removed by maintenance. Your light or
           dark theme is a device preference stored in your browser.

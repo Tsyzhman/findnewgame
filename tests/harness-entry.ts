@@ -13,3 +13,4 @@ export * from '../lib/server/assets';
 export * from '../lib/server/security';
 export * from '../lib/server/maintenance';
 export * from '../lib/server/product-metrics';
+export * from '../lib/server/discovery-policy';

@@ -14,8 +14,10 @@
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",
     "test:http": "node scripts/http-smoke.mjs",
+    "test:production": "node scripts/http-smoke.mjs --production",
     "check:contrast": "node scripts/audit-contrast.mjs",
     "audit:resources": "node scripts/audit-resources.mjs",
+    "benchmark:discovery": "node --expose-gc --experimental-strip-types scripts/benchmark-discovery.ts",
     "prepare:demo": "node scripts/prepare-demo.mjs",
     "db:generate": "drizzle-kit generate"
   },

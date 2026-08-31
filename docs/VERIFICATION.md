@@ -6,20 +6,25 @@ The final production build completed successfully through all five Vinext build 
 
 ## Automated checks
 
-| Check                    | Result and scope                                                                                                                                         |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Lint and TypeScript      | Passing; no suppressed release-blocking type errors                                                                                                      |
-| Domain/server tests      | 48 passing: 21 domain and 27 server integration tests                                                                                                    |
-| HTTP smoke               | Seven groups passing against localhost, including route shells, auth gates, origin checks, media failures, billing-disabled behavior and demo completion |
-| English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                        |
-| Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                 |
-| Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                          |
-| Media                    | 120 sample artwork/screenshot URLs returned HTTP 200; all 20 trailer entries have publisher/creator source attribution                                   |
-| Duplicate/resource audit | One installed copy of each React runtime package; no byte-identical files in the scanned application source/asset directories                            |
+| Check                    | Result and scope                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lint and TypeScript      | Passing; no suppressed release-blocking type errors                                                                                                                 |
+| Domain/server tests      | 56 passing: 27 domain/policy tests and 29 server integration tests                                                                                                  |
+| HTTP smoke               | Seven groups passing against localhost, including English route shells, auth gates, origin rejection, stable Daily assignment, media access and replay protection   |
+| Compiled Worker          | Seven groups passing through Cloudflare's native Worker test-harness entrypoint, including concurrent assignment, origin rejection and absence of development login |
+| English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                                   |
+| Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                            |
+| Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                                     |
+| Media                    | 120 sample artwork/screenshot URLs returned HTTP 200; all 20 trailer entries have publisher/creator source attribution                                              |
+| Duplicate/resource audit | One installed copy of each React runtime package; no byte-identical files in the scanned application source/asset directories                                       |
 
-Server tests bundle the actual services into an isolated Node SQLite/R2 harness. They exercise assignment races, immutable versions/cohorts, strict exclusions, stage completion, privacy floors, private assets, upload reservation/repair, team exclusion, moderation conflicts, payment authenticity/replay/refund boundaries, ad budgets/frequency, maintenance limits, and live KPI denominators. HTTP tests additionally exercise the real Worker API. Neither harness proves distributed production capacity or merchant settlement.
+Server tests bundle the actual services into an isolated Node SQLite/R2 harness. They exercise assignment races, immutable versions/cohorts, strict exclusions, stage completion, privacy floors, private assets, upload reservation/repair, team exclusion, moderation conflicts, payment authenticity/replay/refund boundaries, ad budgets/frequency, maintenance limits, and live KPI denominators. HTTP tests additionally exercise the development Worker's real HTTP API. `npm run test:production` uses the generated production bundle with Cloudflare's isolated test harness and direct Worker dispatch. It closes the runtime in a `finally` block and does not load a development identity. Neither harness proves distributed production capacity, the real Sites login, or merchant settlement.
+
+The standalone compiled-Worker HTTP attempt was not green: Wrangler 4.127.1 returned a proxy connection error and stopped after rejecting an unread request body. Logs match the open [upstream proxy issue](https://github.com/cloudflare/workers-sdk/issues/15203) and its [pending fix](https://github.com/cloudflare/workers-sdk/pull/15207). Direct Worker-entrypoint checks passed repeatedly, retaining the failing-case origin rejection and concurrent requests. This isolates the observed local proxy failure; it does not prove that an upstream release has fixed it. No SDK patch, automatic retry that hides a failed assertion, or disabled application guard is part of the release.
 
 New metric tests cover the exact D7 window, exclusion of preview/anonymous/unaged cohorts, assignment versus actual start, frozen diversity diagnostics, the 99/100 participant milestone, return/iteration timing, and exclusion of test/refunded campaign funding. Fixtures claiming 100 participants are synthetic test records, not business progress.
+
+Discovery-policy tests check closed-form ridge predictions, uncertainty reduction, bounded/invalid data, diversity and exposure probabilities, strict selection constraints, cold-start fallback, authorized/audited configuration changes, immutable existing sets, and feedback qualification/undo/export. They prove implementation properties, not real-world improvement. `discovery-benchmark.json` records 60 warmed trials per policy on 3,000 synthetic candidates and 200 fixture feedback examples; it separates execution timing, observed heap, and total process RSS.
 
 ## Browser checks
 
@@ -29,12 +34,14 @@ New metric tests cover the exact D7 window, exclusion of preview/anonymous/unage
 - Downloaded and visually inspected a real 1200×630 PNG share. Downloaded the account JSON export and inspected its fields. Verified account deletion requires the exact confirmation and left the QA account intact.
 - Opened developer registration, submission, experiment and campaign surfaces. Did not assert ownership, submit fake rights confirmations, or charge a payment method.
 - Inspected admin queues, aggregate health and operations, bounded cleanup, and the disabled unverified studio-claim action.
+- Switched the local discovery control through MMR and contextual exploration, checked conditional inputs and persisted audit reasons, then restored baseline. Reload confirmed the saved policy. The optional policies were not activated on the hosted Site.
 - Checked desktop and 390-pixel mobile layouts, keyboard controls, selected radio semantics, visible focus, and both themes. No horizontal overflow in the checked views.
+- Rechecked the discovery form at a 390-pixel viewport, shortened a clipped policy label, and verified the full label and unchanged document width. The temporary viewport override was reset afterward.
 - Performed a fresh-page navigation after development hot updates and confirmed no new error/warning logs in that check. Earlier hot-module React errors during dependency/source updates are not a production acceptance result.
 
 ## Artifacts and reruns
 
-Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `contrast-audit.json`, `media-audit.json`, and `resource-audit.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports are not committed.
+Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, and `discovery-benchmark.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports are not committed.
 
 The resource audit is read-only. Its dependency and nested cache totals overlap. A development server plus its local workerd process used approximately 1.1 GiB during a long QA session; that is a development working-set observation, not a production memory guarantee. The temporary test bundle is removed by the harness. Durable local D1/R2 data is retained.
 
@@ -52,5 +59,6 @@ YouTube can show its own title, branding, ads, or unavailable/region-restricted 
 - Browser download behavior: [MDN anchor element](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a).
 - Rolling retention windows: [Amplitude retention time](https://amplitude.com/docs/analytics/charts/retention-analysis/retention-analysis-time). The app's exact D7 definition is stated above and in Admin.
 - Payment contracts: [Lava API](https://developers.lava.top/en) and [Tribute webhooks](https://wiki.tribute.tg/for-content-creators/api-documentation/webhooks).
+- Compiled Worker verification: [Cloudflare integration test harness](https://developers.cloudflare.com/workers/testing/test-harness/configure/).
 
 Community reports were used to identify likely pitfalls; implementation decisions were checked against primary documentation and the installed runtime rather than copied blindly.

@@ -22,6 +22,7 @@ Open `http://localhost:3000`. The port is strict: an existing listener must be s
 ## What is implemented
 
 - Player onboarding, weighted taste preferences, Hard No exclusions, personalized daily selection, six-stage quizzes, partial-match scoring, reveals, save/follow reactions, streaks, history, account export/deletion, and spoiler-free image sharing.
+- Selectable MMR diversity and contextual exploration policies with real-feedback gates, bounded per-player learning, immutable decision records, admin rollout controls, and observational outcome reports. The original personalized-random policy remains the default.
 - Developer studios, private asset uploads, Steam lookup, manual submissions, ranked perception targets, immutable material versions, team-test exclusions, calibration reports, misconception matrices, information gain, and between-user A/B tests.
 - Sponsored campaigns, Steam-tag audience targeting, viewable impressions, pacing, budget/frequency limits, and payment reconciliation. Campaign funding and donations remain unavailable until merchant configuration is verified.
 - Admin moderation, taxonomy controls, pricing, verified sample-studio claims, aggregate product metrics, an audit trail, and bounded maintenance.
@@ -38,7 +39,11 @@ npm audit
 npm run build
 ```
 
-With the local server running, `npm run test:http` checks the real HTTP boundary. It intentionally refuses non-local origins. `npm run audit:resources` inventories caches, durable runtime state, React installations, and byte-identical source files without deleting anything. Reports are written to `../artifacts/`.
+With the development server running, `npm run test:http` checks the real HTTP boundary and the local login fixture. After a successful build, `npm run test:production` starts Cloudflare's integration test harness for the compiled Worker, runs the same request checks with development authentication required to be absent, and closes its isolated runtime. It cannot replace a real hosted sign-in check. Both modes intentionally refuse non-local origins.
+
+Wrangler 4.127.1's standalone HTTP proxy can stop after an early rejection of a request body ([upstream issue](https://github.com/cloudflare/workers-sdk/issues/15203)). The compiled test uses the supported harness's direct Worker entrypoint; it retains the cross-site rejection check. This checks application requests without the local network proxy or Sites gateway. No vendor patch or weakened application guard is applied. `npm run start` remains available for manual local inspection, with this known tooling limitation.
+
+`npm run audit:resources` inventories caches, durable runtime state, React installations, and byte-identical source files without deleting anything. `npm run benchmark:discovery` measures pure selection on 3,000 synthetic candidates; it does not claim production capacity. Reports are written to `../artifacts/`.
 
 ## Project map
 
@@ -57,4 +62,4 @@ Read [architecture](docs/ARCHITECTURE.md), [operations](docs/OPERATIONS.md), [SM
 
 ## Launch boundary
 
-Private preview uses `CATALOG_MODE=demo` and `BILLING_ENABLED=false`. Moving to a commercial public beta requires rights-cleared submissions, real participants, merchant verification, operator/contact/terms information, and a production capacity check. Advanced recommendation experiments and 30/90-day business outcomes remain separate work; see the coverage document.
+Private preview uses `CATALOG_MODE=demo`, `BILLING_ENABLED=false`, and the baseline discovery policy. Moving to a commercial public beta requires rights-cleared submissions, real participants, merchant verification, operator/contact/terms information, and a production capacity check. Empirical recommendation quality and 30/90-day business outcomes still need real data. See [discovery policy operation](docs/DISCOVERY_POLICIES.md) before enabling an experimental policy.

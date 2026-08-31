@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, ExternalLink, ShieldCheck } from 'lucide-react';
 import { api, assetUrl, useMe, useTags } from '@/lib/api';
 import type { GameContent, SteamTag } from '@/lib/types';
+import { BANDIT, type DiscoverySettings } from '@/lib/discovery-policy';
 import {
   ActionButton,
   AuthGate,
@@ -72,6 +73,16 @@ type AdminData = {
     status: string;
   }[];
   metrics: Record<string, number | null>;
+  discovery: {
+    policy: string;
+    sets: number;
+    started: number;
+    completed: number;
+    rated: number;
+    positive: number;
+    fallbacks: number;
+    similarity: number | null;
+  }[];
   storage: Record<string, number | null>;
   audit: {
     id: string;
@@ -87,6 +98,7 @@ type AdminData = {
     turnstileEnabled: boolean;
     localMode: boolean;
     impressionPriceCents: number;
+    discovery: DiscoverySettings;
   };
 };
 type ReviewAction = {
@@ -96,6 +108,126 @@ type ReviewAction = {
   name: string;
   versionId?: string;
 };
+function DiscoveryControls({ settings }: { settings: DiscoverySettings }) {
+  const client = useQueryClient(),
+    [draft, setDraft] = useState<DiscoverySettings | null>(null),
+    [reason, setReason] = useState(''),
+    value = draft ?? settings;
+  const update = useMutation({
+    mutationFn: () =>
+      api('admin/discovery', { method: 'PATCH', body: { ...value, reason } }),
+    onSuccess: async () => {
+      setDraft(null);
+      setReason('');
+      await client.invalidateQueries({ queryKey: ['admin'] });
+    },
+  });
+  return (
+    <section className="surface settings-card">
+      <h2>Organic discovery policy</h2>
+      <p>
+        These controls affect newly created Daily sets. Existing sets, strict
+        exclusions, and paid campaigns are unchanged.
+      </p>
+      <form
+        className="form-stack"
+        onSubmit={(event) => {
+          event.preventDefault();
+          update.mutate();
+        }}
+      >
+        <Field id="discovery-policy" label="Selection policy">
+          <select
+            className="fng-input"
+            id="discovery-policy"
+            value={value.policy}
+            onChange={(event) =>
+              setDraft({
+                ...value,
+                policy: event.target.value as DiscoverySettings['policy'],
+              })
+            }
+          >
+            <option value="baseline">Personalized random · baseline</option>
+            <option value="mmr">MMR · relevance and diversity</option>
+            <option value="linucb">Contextual exploration</option>
+          </select>
+        </Field>
+        <Field id="discovery-relevance" label="Relevance weight (0.5–1)">
+          <TextInput
+            id="discovery-relevance"
+            type="number"
+            min={0.5}
+            max={1}
+            step={0.05}
+            required
+            value={value.relevanceWeight}
+            disabled={value.policy === 'baseline'}
+            onChange={(event) =>
+              setDraft({
+                ...value,
+                relevanceWeight: Number(event.target.value),
+              })
+            }
+          />
+        </Field>
+        <p className="field-help">
+          Lower values favor variety among relevant candidates. Within that
+          pool, organic exposure weights the random draw.
+        </p>
+        <Field id="discovery-exploration" label="Exploration strength (0–1)">
+          <TextInput
+            id="discovery-exploration"
+            type="number"
+            min={0}
+            max={1}
+            step={0.05}
+            required
+            value={value.exploration}
+            disabled={value.policy !== 'linucb'}
+            onChange={(event) =>
+              setDraft({ ...value, exploration: Number(event.target.value) })
+            }
+          />
+        </Field>
+        <Notice>
+          The learning policy needs {BANDIT.minimumSamples} rated independent
+          live games per player, including at least {BANDIT.minimumPerOutcome}{' '}
+          positive and {BANDIT.minimumPerOutcome} negative outcomes. Until then
+          it uses MMR. It reads at most {BANDIT.maximumSamples} outcomes from
+          the last {BANDIT.historyDays} days. Sample games and quiz accuracy
+          never train it.
+        </Notice>
+        <Field id="discovery-reason" label="Reason for this policy change">
+          <Textarea
+            id="discovery-reason"
+            required
+            minLength={10}
+            maxLength={500}
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            placeholder="Record the rollout or rollback decision and what will be measured."
+          />
+        </Field>
+        <ActionButton
+          type="submit"
+          secondary
+          busy={update.isPending}
+          disabled={reason.trim().length < 10}
+        >
+          Save discovery policy
+        </ActionButton>
+        {update.error && <ErrorBox error={update.error} />}
+        {update.isSuccess && (
+          <Notice tone="success">
+            Policy saved and recorded in the audit trail. Existing Daily sets
+            are unchanged.
+          </Notice>
+        )}
+      </form>
+    </section>
+  );
+}
 function StudioClaim() {
   const client = useQueryClient(),
     [form, setForm] = useState({
@@ -753,6 +885,63 @@ export function AdminPage() {
                   )}
                 </section>
                 <StudioClaim />
+                <DiscoveryControls settings={data.config.discovery} />
+                <section className="surface settings-card">
+                  <h2>Discovery outcomes · last 30 days</h2>
+                  <p>
+                    Live sets only, grouped by the policy actually used. These
+                    are observational groups with different players and periods,
+                    not proof that one policy caused an improvement.
+                  </p>
+                  {!data.discovery.length ? (
+                    <p>No live discovery cohorts yet.</p>
+                  ) : (
+                    <div className="table-scroll">
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            <th>Policy</th>
+                            <th>Sets</th>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Rated</th>
+                            <th>Positive relevance</th>
+                            <th>Mean similarity</th>
+                            <th>Fallbacks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {data.discovery.map((row) => (
+                            <tr key={row.policy}>
+                              <td>
+                                {row.policy === 'baseline'
+                                  ? 'Personalized random'
+                                  : row.policy === 'mmr'
+                                    ? 'MMR'
+                                    : 'Contextual exploration'}
+                              </td>
+                              <td>{row.sets.toLocaleString('en-US')}</td>
+                              <td>{row.started.toLocaleString('en-US')}</td>
+                              <td>{row.completed.toLocaleString('en-US')}</td>
+                              <td>{row.rated.toLocaleString('en-US')}</td>
+                              <td>
+                                {row.rated
+                                  ? `${Math.round((100 * row.positive) / row.rated)}%`
+                                  : '—'}
+                              </td>
+                              <td>
+                                {row.similarity === null
+                                  ? '—'
+                                  : row.similarity.toFixed(3)}
+                              </td>
+                              <td>{row.fallbacks.toLocaleString('en-US')}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </section>
                 <section className="surface settings-card">
                   <h2>Fixed impression price</h2>
                   <form

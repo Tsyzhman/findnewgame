@@ -6,17 +6,19 @@ The final production build completed successfully through all five Vinext build 
 
 ## Automated checks
 
-| Check                    | Result and scope                                                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Lint and TypeScript      | Passing; no suppressed release-blocking type errors                                                                                                                 |
-| Domain/server tests      | 56 passing: 27 domain/policy tests and 29 server integration tests                                                                                                  |
-| HTTP smoke               | Seven groups passing against localhost, including English route shells, auth gates, origin rejection, stable Daily assignment, media access and replay protection   |
-| Compiled Worker          | Seven groups passing through Cloudflare's native Worker test-harness entrypoint, including concurrent assignment, origin rejection and absence of development login |
-| English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                                   |
-| Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                            |
-| Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                                     |
-| Media                    | 120 sample artwork/screenshot URLs returned HTTP 200; all 20 trailer entries have publisher/creator source attribution                                              |
-| Duplicate/resource audit | One installed copy of each React runtime package; no byte-identical files in the scanned application source/asset directories                                       |
+| Check                    | Result and scope                                                                                                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lint and TypeScript      | Passing; no suppressed release-blocking type errors                                                                                                                          |
+| Domain/server tests      | 57 passing: 27 domain/policy tests and 30 server integration tests                                                                                                           |
+| HTTP smoke               | Seven groups passing against localhost, including English route shells, auth gates, origin rejection, stable Daily assignment, media access and replay protection            |
+| Compiled Worker          | Seven groups passing through Cloudflare's native Worker test-harness entrypoint, including concurrent assignment, origin rejection and absence of development login          |
+| Bounded concurrency      | Six groups passing across 309 native Worker requests: eight sample sessions, at most 16 in flight, immutable assignments, finalization, rate limits and pre-migrated startup |
+| Local recovery           | Seven phases passing: all 30 tables / 51 fixture rows and one private asset restored; checksums, metadata, foreign keys, uniqueness and budget constraints verified          |
+| English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                                            |
+| Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                                     |
+| Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                                              |
+| Media                    | 120 sample artwork/screenshot URLs returned HTTP 200; all 20 trailer entries have publisher/creator source attribution                                                       |
+| Duplicate/resource audit | One installed copy of each React runtime package; no byte-identical files in the scanned application source/asset directories                                                |
 
 Server tests bundle the actual services into an isolated Node SQLite/R2 harness. They exercise assignment races, immutable versions/cohorts, strict exclusions, stage completion, privacy floors, private assets, upload reservation/repair, team exclusion, moderation conflicts, payment authenticity/replay/refund boundaries, ad budgets/frequency, maintenance limits, and live KPI denominators. HTTP tests additionally exercise the development Worker's real HTTP API. `npm run test:production` uses the generated production bundle with Cloudflare's isolated test harness and direct Worker dispatch. It closes the runtime in a `finally` block and does not load a development identity. Neither harness proves distributed production capacity, the real Sites login, or merchant settlement.
 
@@ -25,6 +27,10 @@ The standalone compiled-Worker HTTP attempt was not green: Wrangler 4.127.1 retu
 New metric tests cover the exact D7 window, exclusion of preview/anonymous/unaged cohorts, assignment versus actual start, frozen diversity diagnostics, the 99/100 participant milestone, return/iteration timing, and exclusion of test/refunded campaign funding. Fixtures claiming 100 participants are synthetic test records, not business progress.
 
 Discovery-policy tests check closed-form ridge predictions, uncertainty reduction, bounded/invalid data, diversity and exposure probabilities, strict selection constraints, cold-start fallback, authorized/audited configuration changes, immutable existing sets, and feedback qualification/undo/export. They prove implementation properties, not real-world improvement. `discovery-benchmark.json` records 60 warmed trials per policy on 3,000 synthetic candidates and 200 fixture feedback examples; it separates execution timing, observed heap, and total process RSS.
+
+The new startup regression first failed with `duplicate column name: d7_returned_at`; the compiled Worker also returned HTTP 500 when all generated migrations had been applied before its first request. The bootstrap parser previously excluded digits from column names. It now recognizes an already-installed column instead of applying it twice. Both the isolated service test and a rebuilt Worker pass this platform-first migration case. No schema migration or application data was removed or rewritten for the fix.
+
+The recovery drill first reproduced a combined SQL export that could not import because parent tables did not yet exist. Separate schema-only and data-only exports now restore successfully with foreign-key enforcement retained. Every application table contains a fixture, and all row values and schema definitions are compared. The source and destination are new local databases; existing local D1/R2 files remain byte-identical. See [recovery and concurrency verification](RECOVERY.md) for exact scope, safeguards, and the remaining hosted recovery gate.
 
 ## Browser checks
 
@@ -41,13 +47,13 @@ Discovery-policy tests check closed-form ridge predictions, uncertainty reductio
 
 ## Artifacts and reruns
 
-Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, and `discovery-benchmark.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports are not committed.
+Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `concurrency-smoke.json`, `recovery-drill.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, and `discovery-benchmark.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports and temporary fixture backups are not committed.
 
 The resource audit is read-only. Its dependency and nested cache totals overlap. A development server plus its local workerd process used approximately 1.1 GiB during a long QA session; that is a development working-set observation, not a production memory guarantee. The temporary test bundle is removed by the harness. Durable local D1/R2 data is retained.
 
 ## Limits that must remain explicit
 
-The contrast audit is not full WCAG certification. No independent accessibility audit, automated visual regression suite, production load test, browser-market coverage study, penetration test, backup restoration drill, real payment settlement, real 30-person trial, or 30/90-day KPI measurement has been completed.
+The contrast audit is not full WCAG certification. No independent accessibility audit, automated visual regression suite, production load test, browser-market coverage study, penetration test, hosted backup restoration drill, real payment settlement, real 30-person product spike, 200+ player closed beta, or 30/90-day KPI measurement has been completed. Local recovery and bounded concurrency are now verified, with their narrower scope explicitly recorded.
 
 YouTube can show its own title, branding, ads, or unavailable/region-restricted content. English caption requests cannot create a translation when the source has none. Steam and YouTube media can change or disappear after this check. Rights clearance remains required for a public catalog.
 
@@ -60,5 +66,6 @@ YouTube can show its own title, branding, ads, or unavailable/region-restricted 
 - Rolling retention windows: [Amplitude retention time](https://amplitude.com/docs/analytics/charts/retention-analysis/retention-analysis-time). The app's exact D7 definition is stated above and in Admin.
 - Payment contracts: [Lava API](https://developers.lava.top/en) and [Tribute webhooks](https://wiki.tribute.tg/for-content-creators/api-documentation/webhooks).
 - Compiled Worker verification: [Cloudflare integration test harness](https://developers.cloudflare.com/workers/testing/test-harness/configure/).
+- Recovery: [D1 import/export](https://developers.cloudflare.com/d1/best-practices/import-export-data/), [migration tracking](https://developers.cloudflare.com/d1/reference/migrations/), and the reproduced [SQL export-order issue](https://github.com/cloudflare/workers-sdk/issues/5683).
 
 Community reports were used to identify likely pitfalls; implementation decisions were checked against primary documentation and the installed runtime rather than copied blindly.

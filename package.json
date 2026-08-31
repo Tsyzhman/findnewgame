@@ -15,6 +15,8 @@
     "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",
     "test:http": "node scripts/http-smoke.mjs",
     "test:production": "node scripts/http-smoke.mjs --production",
+    "test:recovery": "node scripts/recovery-drill.mjs",
+    "test:concurrency": "node scripts/concurrency-smoke.mjs",
     "check:contrast": "node scripts/audit-contrast.mjs",
     "audit:resources": "node scripts/audit-resources.mjs",
     "benchmark:discovery": "node --expose-gc --experimental-strip-types scripts/benchmark-discovery.ts",

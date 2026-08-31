@@ -172,7 +172,7 @@ async function applyAdditionalMigrations(db: D1Database) {
       .map((s) => s.trim())
       .filter(Boolean)) {
       const addition = sourceStatement.match(
-        /^ALTER TABLE [`"]?([a-z_]+)[`"]? ADD (?:COLUMN )?[`"]?([a-z_]+)[`"]? /i,
+        /^ALTER TABLE [`"]?([a-z_][a-z0-9_]*)[`"]? ADD (?:COLUMN )?[`"]?([a-z_][a-z0-9_]*)[`"]? /i,
       );
       if (
         addition &&

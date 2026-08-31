@@ -79,6 +79,45 @@ const tag = (name) => {
   assert.ok(t);
   return t.id;
 };
+void test('database startup accepts a schema already applied by the platform migration runner', async () => {
+  // A new module instance owns a separate database and bootstrap promise.
+  const boot = await import(
+    `${pathToFileURL(compiled).href}?preapplied-migrations`
+  );
+  const journal = JSON.parse(
+    await readFile(resolve(root, 'drizzle/meta/_journal.json'), 'utf8'),
+  );
+  try {
+    for (const entry of journal.entries) {
+      boot.env.DB.sqlite.exec(
+        await readFile(resolve(root, 'drizzle', `${entry.tag}.sql`), 'utf8'),
+      );
+    }
+    const database = await boot.database();
+    assert.equal(database, boot.env.DB);
+    assert.deepEqual(
+      database.sqlite
+        .prepare(
+          'SELECT version FROM schema_migrations WHERE length(version)=4 ORDER BY version',
+        )
+        .all()
+        .map((row) => row.version),
+      journal.entries.map((entry) => entry.tag.slice(0, 4)),
+    );
+    const columns = database.sqlite.prepare('PRAGMA table_info(users)').all();
+    assert.equal(
+      columns.filter((column) => column.name === 'd7_returned_at').length,
+      1,
+    );
+    assert.equal(await boot.database(), database);
+    assert.deepEqual(
+      database.sqlite.prepare('PRAGMA foreign_key_check').all(),
+      [],
+    );
+  } finally {
+    boot.env.DB.sqlite.close();
+  }
+});
 async function user(role = 'player') {
   const id = `test-user-${++serial}`,
     now = Date.now(),

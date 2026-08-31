@@ -69,6 +69,8 @@ Each cleanup processes at most 1,000 expired demo users, 5,000 rate buckets more
 
 Before a schema or access change, create and verify a platform-supported D1/R2 backup. Backups and restoration drills are operational gates, not features that have been silently configured. Keep migrations append-only. A code rollback does not reverse data migrations. Stop incoming writes if a migration is inconsistent, preserve data, inspect the applied schema, and repair forward.
 
+The repeatable local `npm run test:recovery` drill verifies SQL export/import, R2 bytes and metadata, all application tables, constraints, and preservation of existing local data. It restores schema before data after reproducing an export-order failure. This is an isolated synthetic drill, not a hosted backup. Follow the [recovery guide](RECOVERY.md) for its boundaries and the still-required production procedure.
+
 For a payment incident, disable new checkout, pause affected campaigns, preserve the signed event evidence, and reconcile with the provider. Never mark a campaign paid merely to clear an error. For a rights report, withdraw the affected content and preserve moderation history.
 
 ## Cache, duplicates, and memory
@@ -79,6 +81,6 @@ The audit counts nested caches separately from `node_modules`; those byte counts
 
 ## Release checks
 
-Run lint, typecheck, all tests, the contrast audit, dependency audit, local HTTP checks, a production build, and `npm run test:production`. The compiled test uses native Worker dispatch; the standalone Wrangler HTTP-proxy limitation is recorded in [verification](VERIFICATION.md). Run the synthetic discovery benchmark after recommendation changes and label its limits. Restore local policy controls to baseline after QA. Use the Sites packaging workflow with the exact validated source and generated migrations. Verify the returned deployment status and preserve the same user-facing browser tab. Do not upload `.env`, `.wrangler`, test accounts, downloaded account exports, or dependency/cache folders.
+Run lint, typecheck, all tests, the contrast audit, dependency audit, local HTTP checks, a production build, `npm run test:production`, `npm run test:concurrency`, and `npm run test:recovery`. The compiled checks use native Worker dispatch; the standalone Wrangler HTTP-proxy limitation is recorded in [verification](VERIFICATION.md). The concurrency check also starts the app on a schema already applied by a platform migration runner. Run the synthetic discovery benchmark after recommendation changes and label its limits. Restore local policy controls to baseline after QA. Use the Sites packaging workflow with the exact validated source and generated migrations. Verify the returned deployment status and preserve the same user-facing browser tab. Do not upload `.env`, `.wrangler`, fixture directories, SQL backups, test accounts, downloaded account exports, or dependency/cache folders.
 
 After a successful deployment, check the home page, `/api/health`, sign-in/account, demo flow, and authorized admin access. Retain owner-only access until the launch gates in [plan coverage](PLAN_COVERAGE.md) are met and broader access is authorized.

@@ -14,6 +14,7 @@ The final production build completed successfully through all five Vinext build 
 | Compiled Worker          | Seven groups passing through Cloudflare's native Worker test-harness entrypoint, including concurrent assignment, origin rejection and absence of development login          |
 | Bounded concurrency      | Six groups passing across 309 native Worker requests: eight sample sessions, at most 16 in flight, immutable assignments, finalization, rate limits and pre-migrated startup |
 | Local recovery           | Seven phases passing: all 30 tables / 51 fixture rows and one private asset restored; checksums, metadata, foreign keys, uniqueness and budget constraints verified          |
+| Tag search diagnostic    | 240 local desktop measurements below 100 ms; maximum 48.1 ms from the input handler through a rendering opportunity. This is not production INP or a mobile guarantee      |
 | English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                                            |
 | Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                                     |
 | Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                                              |
@@ -36,6 +37,7 @@ The recovery drill first reproduced a combined SQL export that could not import 
 
 - Completed all three anonymous sample mysteries, including a zero-score path, and verified Daily completion and the spoiler-free result grid.
 - Completed English onboarding and profile editing; checked signed-in Daily persistence.
+- Rechecked search across genre, gameplay, mood and Hard No scopes. Case/whitespace normalization, unmatched results, favorite-tag exclusions and adding/removing a selected chip passed. This follow-up did not submit preferences.
 - Exercised the five- and fifteen-second trailer controls. Confirmed no iframe before consent, actual `youtube-nocookie.com` embedding with `hl=en` and English caption preference, and iframe removal after the timed segment.
 - Downloaded and visually inspected a real 1200×630 PNG share. Downloaded the account JSON export and inspected its fields. Verified account deletion requires the exact confirmation and left the QA account intact.
 - Opened developer registration, submission, experiment and campaign surfaces. Did not assert ownership, submit fake rights confirmations, or charge a payment method.
@@ -45,9 +47,26 @@ The recovery drill first reproduced a combined SQL export that could not import 
 - Rechecked the discovery form at a 390-pixel viewport, shortened a clipped policy label, and verified the full label and unchanged document width. The temporary viewport override was reset afterward.
 - Performed a fresh-page navigation after development hot updates and confirmed no new error/warning logs in that check. Earlier hot-module React errors during dependency/source updates are not a production acceptance result.
 
+### Tag search timing
+
+The original plan's Week 2 target is client-side search below 100 ms. A local desktop diagnostic on 2026-08-31 measured 240 searches in the development build: three cycles of 20 queries in each of four scopes. Broad prefixes rendered up to 60 results; the cases also included narrow prefixes, no matches, mixed case and whitespace. All measurements were below the target, with the following scope limits.
+
+| Picker scope | Samples | Median | 95th percentile | Maximum |
+| ------------ | ------- | ------ | --------------- | ------- |
+| Genres       | 60      | 11.6 ms | 44.6 ms        | 48.1 ms |
+| Gameplay     | 60      | 10.3 ms | 24.0 ms        | 30.5 ms |
+| Moods        | 60      | 11.4 ms | 36.1 ms        | 38.5 ms |
+| Hard No      | 60      | 11.2 ms | 35.8 ms        | 42.1 ms |
+
+A temporary component probe started the clock in `onValueChange`, immediately before `setSearch`, and ended it at the second animation-frame callback after the search-state commit. It reported through DOM attributes. Every measured page state was visible. This covers component processing and a rendering opportunity, but excludes input delay before the handler and does not measure the complete page lifecycle. It must not be called INP, a production service-level result, or a slower-device guarantee. See [the browser's animation-frame contract](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) and [the fuller INP definition](https://web.dev/articles/inp).
+
+The probe was removed afterward. Git confirmed no remaining component changes, and a fresh navigation showed no probe attributes, the original three selected genres, and an empty search with 24 suggestions. No preferences were submitted, and no telemetry or dependency was added. The prior keyboard check remains separate; this follow-up measured search and a reversible pointer-selection flow.
+
+The workspace artifacts `tag-search-browser.json` and `tag-search-probe.patch` retain the query results, exact measurement method and temporary patch for review. The initial external automation timings included browser-control overhead, so they were not used as client performance. An initial assertion also incorrectly expected exactly one result for `imm` in every scope: the all-tags picker legitimately returns both Immersive Sim and Immersive. The final assertion compares normalized queries within the same scope; the genre example still requires exactly Immersive Sim. Mobile and real-user performance remain open.
+
 ## Artifacts and reruns
 
-Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `concurrency-smoke.json`, `recovery-drill.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, and `discovery-benchmark.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports and temporary fixture backups are not committed.
+Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `concurrency-smoke.json`, `recovery-drill.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, `discovery-benchmark.json`, and `tag-search-browser.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports and temporary fixture backups are not committed.
 
 The resource audit is read-only. Its dependency and nested cache totals overlap. A development server plus its local workerd process used approximately 1.1 GiB during a long QA session; that is a development working-set observation, not a production memory guarantee. The temporary test bundle is removed by the harness. Durable local D1/R2 data is retained.
 

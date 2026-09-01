@@ -56,6 +56,15 @@ import { AdSlot } from './ad-slot';
 import { ResetCountdown } from './daily-hub';
 import { TrailerClip } from './trailer-clip';
 
+const CLUE_TIMELINE_LABELS = [
+  { full: 'Artwork', compact: 'Artwork' },
+  { full: 'Screenshot', compact: 'Screen' },
+  { full: 'Gallery', compact: 'Gallery' },
+  { full: '5 seconds', compact: '5 sec' },
+  { full: '15 seconds', compact: '15 sec' },
+  { full: 'Description', compact: 'Details' },
+] as const;
+
 export function GamePlayer() {
   const params = useSearchParams(),
     demo = params.get('demo') === '1',
@@ -292,16 +301,12 @@ export function GamePlayer() {
                         )}
                       </span>
                       <small>
-                        {
-                          [
-                            'Artwork',
-                            'Screenshot',
-                            'Gallery',
-                            '5 seconds',
-                            '15 seconds',
-                            'Description',
-                          ][index]
-                        }
+                        <span className="clue-label-full">
+                          {CLUE_TIMELINE_LABELS[index].full}
+                        </span>
+                        <span className="clue-label-compact" aria-hidden="true">
+                          {CLUE_TIMELINE_LABELS[index].compact}
+                        </span>
                       </small>
                       {!available && (
                         <span className="sr-only">

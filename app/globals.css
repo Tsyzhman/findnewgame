@@ -239,6 +239,7 @@ img {
 .brand {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   font-size: 21px;
   font-weight: 750;
   letter-spacing: -0.8px;
@@ -266,9 +267,11 @@ img {
   color: var(--text-muted);
 }
 .main-nav a {
+  min-width: 44px;
   min-height: 44px;
   display: flex;
   align-items: center;
+  justify-content: center;
   border-bottom: 2px solid transparent;
 }
 .main-nav a:hover,
@@ -292,6 +295,8 @@ img {
 .header-login {
   font-size: 14px;
   font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
   display: flex;
   gap: 14px;
   align-items: center;
@@ -311,7 +316,7 @@ img {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 650;
   letter-spacing: 1.8px;
   color: var(--text-muted);
@@ -335,10 +340,10 @@ img {
   color: var(--accent-primary);
 }
 .lead {
-  font-size: 17px;
-  line-height: 1.8;
+  font-size: clamp(19px, 1.8vw, 23px);
+  line-height: 1.5;
   color: var(--text-secondary);
-  max-width: 520px;
+  max-width: 56ch;
 }
 .hero-actions {
   display: flex;
@@ -356,8 +361,9 @@ img {
   padding: 12px 19px;
   border-radius: 13px;
   border: 1px solid transparent;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1;
   transition:
     transform 0.18s,
     background 0.18s,
@@ -630,7 +636,7 @@ img {
   letter-spacing: -0.3px;
 }
 .ritual-card p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-muted);
   line-height: 1.8;
 }
@@ -660,17 +666,19 @@ img {
   letter-spacing: -0.5px;
 }
 .developer-callout p:not(.eyebrow) {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-muted);
 }
 .developer-callout > a {
   margin-left: auto;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 15px;
 }
 .catalog-note {
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.35;
   color: var(--text-muted);
   margin: 26px 0 42px;
 }
@@ -682,7 +690,7 @@ img {
   border-top: 1px solid var(--border);
   padding-block: 26px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .footer-brand {
   font-size: 16px;
@@ -693,6 +701,16 @@ img {
   align-items: center;
   gap: 24px;
   margin-left: auto;
+}
+.site-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 .site-footer a:hover {
   color: var(--accent-primary);
@@ -731,7 +749,7 @@ img {
     gap: 10px;
   }
   .hero-actions a {
-    font-size: 12px;
+    font-size: 15px;
     padding: 11px 13px;
   }
 }
@@ -745,7 +763,7 @@ img {
   }
   .main-nav {
     gap: 14px;
-    font-size: 12px;
+    font-size: 14px;
   }
   .header-actions {
     gap: 8px;
@@ -826,7 +844,7 @@ img {
     gap: 2px;
   }
   .header-login {
-    font-size: 12px;
+    font-size: 14px;
     padding: 0 7px;
     gap: 8px;
   }
@@ -835,7 +853,7 @@ img {
     gap: 30px;
   }
   .eyebrow {
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 1.3px;
   }
   .hero-copy h1 {
@@ -844,7 +862,7 @@ img {
     margin: 21px 0;
   }
   .lead {
-    font-size: 15px;
+    font-size: 19px;
   }
   .desktop-break {
     display: none;
@@ -854,11 +872,11 @@ img {
     margin-top: 25px;
   }
   .hero-actions a {
-    font-size: 14px;
+    font-size: 15px;
     min-height: 48px;
   }
   .quiet-note {
-    font-size: 11px;
+    font-size: 12px;
   }
   .preview-scene {
     padding: 12px;
@@ -906,7 +924,7 @@ img {
     font-size: 18px;
   }
   .ritual-card p {
-    font-size: 14px;
+    font-size: 16px;
   }
   .daily-teaser {
     padding-bottom: 34px;
@@ -919,19 +937,19 @@ img {
     font-size: 22px;
   }
   .developer-callout p:not(.eyebrow) {
-    font-size: 13px;
+    font-size: 16px;
   }
   .developer-callout > a {
     width: 100%;
     margin-left: 0;
-    font-size: 13px;
+    font-size: 15px;
   }
   .dev-callout-icon {
     display: none;
   }
   .catalog-note {
     line-height: 1.8;
-    font-size: 10px;
+    font-size: 12px;
   }
   .site-footer {
     gap: 14px;
@@ -972,15 +990,17 @@ img {
   margin-top: 13px;
   color: var(--text-muted);
   max-width: 700px;
-  font-size: 15px;
-  line-height: 1.75;
+  font-size: 17px;
+  line-height: 1.65;
 }
 .fng-button {
   height: auto !important;
   min-height: 46px !important;
   border-radius: 13px !important;
   white-space: normal !important;
-  line-height: 1.4 !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
 }
 .fng-button:disabled {
   opacity: 0.48;
@@ -995,8 +1015,9 @@ img {
   background: var(--surface-2);
   color: var(--text-primary);
   padding: 12px 14px;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
   resize: vertical;
   outline-offset: 3px;
 }
@@ -1017,9 +1038,10 @@ img {
   font-weight: 550;
 }
 .field-help {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 550;
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: 1.35;
 }
 .form-grid {
   display: grid;
@@ -1054,8 +1076,8 @@ img {
 }
 .section-description {
   color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.65;
   margin-bottom: 25px;
 }
 .notice {
@@ -1067,8 +1089,9 @@ img {
   padding: 14px 17px;
   border-radius: 13px;
   color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.75;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
   margin-bottom: 22px;
 }
 .notice > svg {
@@ -1133,8 +1156,8 @@ img {
 }
 .auth-card p:not(.eyebrow) {
   color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.65;
 }
 .auth-icon,
 .calibration-icon,
@@ -1148,7 +1171,8 @@ img {
   border-radius: 20px;
 }
 .auth-card .field-help {
-  font-size: 11px !important;
+  font-size: 12px !important;
+  line-height: 1.35;
 }
 .empty-state {
   padding: 52px 28px;
@@ -1168,8 +1192,8 @@ img {
 }
 .empty-state p {
   max-width: 560px;
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.65;
   color: var(--text-muted);
 }
 .empty-state a {
@@ -1320,7 +1344,7 @@ img {
   display: flex;
   justify-content: space-between;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 1.5px;
   margin-bottom: 12px;
 }
@@ -1339,7 +1363,8 @@ img {
   margin-bottom: 13px;
 }
 .picker-heading > span:last-child {
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 550;
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -1354,7 +1379,7 @@ img {
   height: auto !important;
   gap: 6px !important;
   padding: 6px 10px !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   border: 1px solid var(--border-strong) !important;
   border-radius: 9px !important;
   background: var(--accent-primary-soft) !important;
@@ -1379,7 +1404,9 @@ img {
   padding-inline: 7px;
 }
 .picker-command [data-slot='command-input'] {
-  font-size: 13px !important;
+  font-size: 16px !important;
+  font-weight: 500;
+  line-height: 1.4;
 }
 .picker-list {
   max-height: 256px !important;
@@ -1399,7 +1426,7 @@ img {
   background: var(--surface-2);
   border: 1px solid var(--border) !important;
   border-radius: 9px !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   line-height: 1.4 !important;
   cursor: pointer !important;
   max-width: 100%;
@@ -1420,7 +1447,7 @@ img {
   overflow-wrap: anywhere;
 }
 .picker-more {
-  font-size: 11px !important;
+  font-size: 12px !important;
   color: var(--accent-primary);
   min-height: 44px !important;
   margin-top: 8px;
@@ -1567,7 +1594,7 @@ img {
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 2px;
   color: var(--text-muted);
 }
@@ -1585,12 +1612,13 @@ img {
   font-weight: 600;
 }
 .daily-card-copy p {
-  font-size: 11px;
+  font-size: 16px;
   color: var(--text-muted);
   margin: 10px 0;
+  line-height: 1.65;
 }
 .daily-card-copy .text-link {
-  font-size: 12px;
+  font-size: 14px;
 }
 .daily-board-footer {
   padding-top: 24px;
@@ -1634,7 +1662,7 @@ img {
   gap: 15px;
 }
 .game-topline > .text-link {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 .round-progress {
@@ -1650,7 +1678,7 @@ img {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface-1);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 .round-progress > span.current {
@@ -1664,7 +1692,7 @@ img {
   border-color: transparent;
 }
 .round-progress > small {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-left: 7px;
 }
@@ -1687,7 +1715,8 @@ img {
   gap: 7px;
   white-space: nowrap;
   color: var(--accent-secondary);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   background: var(--accent-secondary-soft);
   padding: 10px 13px;
   border-radius: 11px;
@@ -1713,10 +1742,11 @@ img {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
 }
 .clue-heading > span:last-child {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1.3px;
   color: var(--text-muted);
 }
@@ -1749,7 +1779,7 @@ img {
   background: var(--header-bg);
   color: var(--text-primary);
   border: 1px solid var(--border);
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 1.3px;
   border-radius: 7px;
 }
@@ -1798,9 +1828,17 @@ img {
   color: var(--accent-primary);
 }
 .clue-timeline li small {
-  font-size: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
   color: var(--text-muted);
-  white-space: nowrap;
+  width: 100%;
+  min-height: 27px;
+  padding-inline: 2px;
+  overflow-wrap: normal;
+}
+.clue-label-compact {
+  display: none;
 }
 .clue-timeline li.active small {
   color: var(--accent-primary);
@@ -1816,17 +1854,19 @@ img {
   margin-top: 23px;
   padding: 17px 3px 0;
   color: var(--text-muted);
-  font-size: 10px;
-  line-height: 1.7;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.35;
 }
 .clue-explainer svg {
   margin-top: 2px;
 }
 .asset-notice {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 550;
   padding-top: 13px;
-  line-height: 1.7;
+  line-height: 1.35;
 }
 .screenshot-strip {
   display: grid;
@@ -1861,8 +1901,8 @@ img {
   margin: 15px 0;
 }
 .description-clue > p {
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 17px;
+  line-height: 1.65;
   color: var(--text-secondary);
 }
 .video-consent,
@@ -1885,9 +1925,9 @@ img {
 }
 .video-consent p,
 .media-error p {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text-muted);
-  line-height: 1.8;
+  line-height: 1.65;
 }
 .guess-panel {
   padding: 25px;
@@ -1908,11 +1948,11 @@ img {
 .guess-tabs button {
   min-height: 44px !important;
   padding: 7px !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   gap: 6px !important;
 }
 .guess-tabs button > span {
-  font-size: 9px;
+  font-size: 12px;
   width: 16px;
   height: 16px;
   display: grid;
@@ -1925,12 +1965,13 @@ img {
   background: var(--surface-1) !important;
 }
 .picker-instruction {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 550;
   color: var(--text-muted);
   margin: 14px 0 16px;
 }
 .compact .tag-option {
-  font-size: 10px !important;
+  font-size: 12px !important;
   min-height: 38px !important;
   padding: 8px 10px !important;
 }
@@ -1938,10 +1979,10 @@ img {
   max-height: 180px !important;
 }
 .compact .picker-heading {
-  font-size: 11px;
+  font-size: 12px;
 }
 .compact .picker-more {
-  font-size: 10px !important;
+  font-size: 12px !important;
 }
 .would-click {
   border-top: 1px solid var(--border);
@@ -1966,7 +2007,9 @@ img {
   border: 1px solid var(--border);
   cursor: pointer;
   border-radius: 10px !important;
-  font-size: 11px !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
   gap: 6px !important;
   background: var(--surface-2) !important;
 }
@@ -1982,10 +2025,10 @@ img {
   margin-top: 23px;
 }
 .guess-actions .fng-button {
-  font-size: 12px !important;
+  font-size: 15px !important;
 }
 .guess-panel > .field-help {
-  font-size: 9px;
+  font-size: 12px;
   margin-top: 12px;
   text-align: center;
 }
@@ -1996,7 +2039,8 @@ img {
   gap: 15px;
   margin: 21px 0;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 550;
 }
 .quiz-bottom-note > span {
   display: flex;
@@ -2005,7 +2049,8 @@ img {
 }
 .report-button {
   color: var(--text-muted);
-  font-size: 10px !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
   min-height: 44px !important;
   gap: 7px !important;
 }
@@ -2027,8 +2072,9 @@ img {
 }
 .reveal-heading > p:last-child,
 .summary-heading > p:last-child {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-muted);
+  line-height: 1.65;
 }
 .reveal-layout {
   display: grid;
@@ -2058,9 +2104,9 @@ img {
   color: var(--text-muted);
 }
 .game-description {
-  font-size: 14px;
+  font-size: 17px;
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.65;
   margin: 18px 0;
 }
 .reveal-content > .inline-actions {
@@ -2068,7 +2114,7 @@ img {
 }
 .reveal-content .inline-actions a,
 .reveal-content .inline-actions .fng-button {
-  font-size: 12px !important;
+  font-size: 15px !important;
 }
 .reveal-score {
   padding: 29px;
@@ -2121,7 +2167,7 @@ img {
 .reveal-score > .notice {
   margin-top: 23px;
   margin-bottom: 0;
-  font-size: 10px;
+  font-size: 13px;
 }
 .reveal-score > .field-help {
   margin-top: 21px;
@@ -2139,12 +2185,13 @@ img {
   letter-spacing: -0.2px;
 }
 .post-round-feedback p {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 550;
   color: var(--text-muted);
   margin-top: 8px;
 }
 .post-round-feedback .fng-button {
-  font-size: 11px !important;
+  font-size: 15px !important;
   white-space: nowrap !important;
 }
 .reveal-next {
@@ -2234,7 +2281,7 @@ img {
   justify-content: center;
 }
 .share-area .fng-button {
-  font-size: 12px !important;
+  font-size: 15px !important;
 }
 .relevance-check {
   text-align: center;
@@ -2242,7 +2289,7 @@ img {
   max-width: 800px;
 }
 .relevance-check > p {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-secondary);
   margin-bottom: 15px;
 }
@@ -2250,7 +2297,7 @@ img {
   justify-content: center;
 }
 .relevance-check .fng-button {
-  font-size: 11px !important;
+  font-size: 15px !important;
 }
 .summary-footer {
   text-align: center;
@@ -2484,7 +2531,7 @@ img {
     letter-spacing: -1.1px;
   }
   .page-description {
-    font-size: 13px;
+    font-size: 16px;
   }
   .calibration-panel {
     padding: 23px 20px;
@@ -2521,7 +2568,7 @@ img {
     gap: 10px;
   }
   .form-actions > .field-help {
-    font-size: 10px;
+    font-size: 12px;
   }
   .form-actions > .fng-button:last-child {
     width: 100%;
@@ -2545,7 +2592,7 @@ img {
   .tag-option,
   .compact .tag-option {
     min-height: 44px !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
   }
   .picker-list {
     max-height: 290px !important;
@@ -2594,7 +2641,7 @@ img {
     height: 29px;
   }
   .mystery-kind {
-    font-size: 6px;
+    font-size: 11px;
     letter-spacing: 1px;
     bottom: 13px;
   }
@@ -2605,8 +2652,8 @@ img {
     font-size: 18px;
   }
   .daily-card-copy p {
-    font-size: 11px;
-    line-height: 1.7;
+    font-size: 16px;
+    line-height: 1.65;
   }
   .daily-board-header {
     font-size: 11px;
@@ -2656,7 +2703,7 @@ img {
     display: none;
   }
   .game-topline > .text-link {
-    font-size: 11px;
+    font-size: 14px;
   }
   .game-title-row h1 {
     font-size: 29px;
@@ -2667,7 +2714,7 @@ img {
     margin-bottom: 22px;
   }
   .points-available {
-    font-size: 11px;
+    font-size: 13px;
     padding: 8px 10px;
   }
   .clue-panel {
@@ -2675,10 +2722,10 @@ img {
     border-radius: 19px;
   }
   .clue-heading > span:first-child {
-    font-size: 11px;
+    font-size: 13px;
   }
   .clue-heading > span:last-child {
-    font-size: 8px;
+    font-size: 11px;
   }
   .quiz-media {
     aspect-ratio: 1.3;
@@ -2687,7 +2734,13 @@ img {
     margin-top: 20px;
   }
   .clue-timeline li small {
-    font-size: 7px;
+    font-size: 11px;
+  }
+  .clue-label-full {
+    display: none;
+  }
+  .clue-label-compact {
+    display: inline;
   }
   .clue-timeline li > span:first-child {
     width: 29px;
@@ -2698,10 +2751,10 @@ img {
     top: 14px;
   }
   .clue-explainer {
-    font-size: 9px;
+    font-size: 12px;
   }
   .asset-notice {
-    font-size: 9px;
+    font-size: 12px;
   }
   .guess-panel {
     padding: 23px 20px;
@@ -2711,40 +2764,40 @@ img {
     font-size: 24px;
   }
   .guess-tabs button {
-    font-size: 12px !important;
+    font-size: 14px !important;
   }
   .guess-actions {
     flex-direction: column;
   }
   .guess-actions > .fng-button {
-    font-size: 13px !important;
+    font-size: 15px !important;
   }
   .intent-button {
     min-height: 46px !important;
-    font-size: 12px !important;
+    font-size: 15px !important;
   }
   .would-click > span {
     font-size: 13px;
   }
   .guess-panel > .field-help {
-    font-size: 10px;
+    font-size: 12px;
   }
   .quiz-bottom-note > span {
-    font-size: 10px;
+    font-size: 12px;
     max-width: 190px;
   }
   .quiz-bottom-note {
     gap: 6px;
   }
   .report-button {
-    font-size: 9px !important;
-    padding-inline: 5px !important;
+    font-size: 15px !important;
+    padding-inline: 8px !important;
   }
   .description-clue {
     padding: 26px 22px;
   }
   .description-clue > p {
-    font-size: 13px;
+    font-size: 16px;
   }
   .description-clue h3 {
     font-size: 23px;
@@ -2756,7 +2809,7 @@ img {
     font-size: 21px;
   }
   .video-consent p {
-    font-size: 11px;
+    font-size: 16px;
   }
   .reveal-heading h1,
   .summary-heading h1 {
@@ -2765,8 +2818,8 @@ img {
   }
   .reveal-heading > p:last-child,
   .summary-heading > p:last-child {
-    font-size: 13px;
-    line-height: 1.8;
+    font-size: 16px;
+    line-height: 1.65;
   }
   .reveal-content,
   .reveal-score {
@@ -2902,9 +2955,9 @@ img {
 }
 .settings-card > p,
 .settings-card > .prose {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.65;
   margin-bottom: 20px;
 }
 .settings-card > .form-field,
@@ -2951,8 +3004,8 @@ img {
   margin-top: 0;
 }
 .prose p {
-  font-size: 15px;
-  line-height: 1.9;
+  font-size: 17px;
+  line-height: 1.65;
   color: var(--text-secondary);
   margin-bottom: 18px;
 }
@@ -3025,9 +3078,10 @@ img {
   margin-bottom: 12px;
 }
 .data-controls p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-secondary);
   max-width: 610px;
+  line-height: 1.65;
 }
 .data-controls .form-actions {
   flex-wrap: wrap;
@@ -3068,15 +3122,15 @@ img {
   padding: 27px;
 }
 .collection-body .eyebrow {
-  font-size: 9px;
+  font-size: 11px;
 }
 .collection-body h2 {
   font-size: 25px;
   margin: 13px 0;
 }
 .collection-body p {
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.65;
   color: var(--text-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -3211,9 +3265,10 @@ img {
   margin: 13px 0;
 }
 .studio-game p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-muted);
   margin: 10px 0;
+  line-height: 1.65;
 }
 .inline-labels {
   display: flex;
@@ -3267,9 +3322,9 @@ img {
   letter-spacing: -0.6px;
 }
 .section-title p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-muted);
-  line-height: 1.8;
+  line-height: 1.65;
 }
 .step-label {
   height: 37px;
@@ -3465,8 +3520,9 @@ img {
 }
 .privacy-empty p {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16px;
   max-width: 550px;
+  line-height: 1.65;
 }
 .sample-progress {
   appearance: none;
@@ -3642,9 +3698,10 @@ fieldset.filter-bar {
   margin-bottom: 13px;
 }
 .campaign-row p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-muted);
   margin-top: 13px;
+  line-height: 1.65;
 }
 .campaign-row > .form-actions {
   margin-top: 0;
@@ -3662,9 +3719,10 @@ fieldset.filter-bar {
   margin: 15px 0;
 }
 .review-card > p {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-secondary);
   margin-bottom: 16px;
+  line-height: 1.65;
 }
 .review-card > .form-actions {
   margin-top: 20px;
@@ -3704,9 +3762,10 @@ fieldset.filter-bar {
   border-radius: 12px;
 }
 .review-ad p {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-muted);
   margin: 10px 0;
+  line-height: 1.65;
 }
 .admin-metrics {
   display: grid;
@@ -3946,7 +4005,7 @@ fieldset.filter-bar {
     font-size: 24px;
   }
   .privacy-empty p {
-    font-size: 13px;
+    font-size: 16px;
   }
   .data-table th,
   .data-table td {
@@ -4001,13 +4060,13 @@ fieldset.filter-bar {
     padding: 28px 21px;
   }
   .prose p {
-    font-size: 14px;
+    font-size: 16px;
   }
   .prose h2 {
     font-size: 24px;
   }
   .explanation-grid .settings-card > p {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

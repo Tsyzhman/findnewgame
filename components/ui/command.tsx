@@ -73,7 +73,7 @@ function CommandInput({
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(
-            'w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+            'min-h-11 w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
             className,
           )}
           {...props}

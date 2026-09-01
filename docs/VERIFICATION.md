@@ -1,25 +1,26 @@
 # Verification record
 
-Local verification date: 2026-08-31. Environment: Windows, Node.js 24.11.1, real Cloudflare development runtime, and the in-app browser. Source is English throughout the shipped interface; the unchanged original requirements remain in the parent workspace.
+Local verification date: 2026-09-01. Environment: Windows, Node.js 24.11.1, real Cloudflare development runtime, and Microsoft Edge controlled through the repository Playwright workflow. Source is English throughout the shipped interface; the unchanged original requirements remain in the parent workspace.
 
 The final production build completed successfully through all five Vinext build stages. The emitted Worker entrypoint, client assets, hosting metadata, and all four generated migrations form the deployment package. Vinext's route-classification notice is a framework limitation; the real route shells are covered separately by the HTTP smoke test.
 
 ## Automated checks
 
-| Check                    | Result and scope                                                                                                                                                             |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Lint and TypeScript      | Passing; no suppressed release-blocking type errors                                                                                                                          |
-| Domain/server tests      | 57 passing: 27 domain/policy tests and 30 server integration tests                                                                                                           |
-| HTTP smoke               | Seven groups passing against localhost, including English route shells, auth gates, origin rejection, stable Daily assignment, media access and replay protection            |
-| Compiled Worker          | Seven groups passing through Cloudflare's native Worker test-harness entrypoint, including concurrent assignment, origin rejection and absence of development login          |
+| Check                    | Result and scope                                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lint and TypeScript      | Passing; no suppressed release-blocking type errors                                                                                                                             |
+| Domain/server tests      | 57 passing: 27 domain/policy tests and 30 server integration tests                                                                                                              |
+| HTTP smoke               | Seven groups passing against localhost, including English route shells, auth gates, origin rejection, stable Daily assignment, media access and replay protection               |
+| Compiled Worker          | Seven groups passing through Cloudflare's native Worker test-harness entrypoint, including concurrent assignment, origin rejection and absence of development login             |
 | Bounded concurrency      | Seven groups passing across 312 native Worker requests: eight sample sessions, at most 16 in flight, immutable assignments, finalization, rate limits and partial-seed recovery |
-| Local recovery           | Seven phases passing: all 30 tables / 51 fixture rows and one private asset restored; checksums, metadata, foreign keys, uniqueness and budget constraints verified          |
-| Tag search diagnostic    | 240 local desktop measurements below 100 ms; maximum 48.1 ms from the input handler through a rendering opportunity. This is not production INP or a mobile guarantee      |
-| English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                                            |
-| Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                                     |
-| Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                                              |
-| Media                    | 120 sample artwork/screenshot URLs returned HTTP 200; all 20 trailer entries have publisher/creator source attribution                                                       |
-| Duplicate/resource audit | One installed copy of each React runtime package; no byte-identical files in the scanned application source/asset directories                                                |
+| Local recovery           | Seven phases passing: all 30 tables / 51 fixture rows and one private asset restored; checksums, metadata, foreign keys, uniqueness and budget constraints verified             |
+| Tag search diagnostic    | 240 local desktop measurements below 100 ms; maximum 48.1 ms from the input handler through a rendering opportunity. This is not production INP or a mobile guarantee           |
+| English check            | Rendered page shells have `lang="en"`; shipped app copy contains no Cyrillic text                                                                                               |
+| Contrast                 | 60 text/input-border token pairs pass their 4.5:1 or 3:1 thresholds in light/dark themes                                                                                        |
+| Rendered UI              | 17 route states at 1280×720 and 390×844: no visible target below 44×44, unnamed control, missing image `alt`, heading-level jump, or body-copy text below 16 px                 |
+| Dependency audit         | Zero known vulnerabilities reported by npm at verification time                                                                                                                 |
+| Media                    | 120 sample artwork/screenshot URLs returned HTTP 200; all 20 trailer entries have publisher/creator source attribution                                                          |
+| Duplicate/resource audit | One installed copy of each React runtime package; no byte-identical files in the scanned application source/asset directories                                                   |
 
 Server tests bundle the actual services into an isolated Node SQLite/R2 harness. They exercise assignment races, immutable versions/cohorts, strict exclusions, stage completion, privacy floors, private assets, upload reservation/repair, team exclusion, moderation conflicts, payment authenticity/replay/refund boundaries, ad budgets/frequency, maintenance limits, and live KPI denominators. HTTP tests additionally exercise the development Worker's real HTTP API. `npm run test:production` uses the generated production bundle with Cloudflare's isolated test harness and direct Worker dispatch. It closes the runtime in a `finally` block and does not load a development identity. Neither harness proves distributed production capacity, the real Sites login, or merchant settlement.
 
@@ -35,7 +36,7 @@ The recovery drill first reproduced a combined SQL export that could not import 
 
 ## Browser checks
 
-- Completed all three anonymous sample mysteries, including a zero-score path, and verified Daily completion and the spoiler-free result grid.
+- Completed all three anonymous sample mysteries in one browser flow, including clue advancement, validated genre/gameplay/intent input, three zero-score reveals, Daily completion and the spoiler-free result grid.
 - Completed English onboarding and profile editing; checked signed-in Daily persistence.
 - Rechecked search across genre, gameplay, mood and Hard No scopes. Case/whitespace normalization, unmatched results, favorite-tag exclusions and adding/removing a selected chip passed. This follow-up did not submit preferences.
 - Exercised the five- and fifteen-second trailer controls. Confirmed no iframe before consent, actual `youtube-nocookie.com` embedding with `hl=en` and English caption preference, and iframe removal after the timed segment.
@@ -43,7 +44,9 @@ The recovery drill first reproduced a combined SQL export that could not import 
 - Opened developer registration, submission, experiment and campaign surfaces. Did not assert ownership, submit fake rights confirmations, or charge a payment method.
 - Inspected admin queues, aggregate health and operations, bounded cleanup, and the disabled unverified studio-claim action.
 - Switched the local discovery control through MMR and contextual exploration, checked conditional inputs and persisted audit reasons, then restored baseline. Reload confirmed the saved policy. The optional policies were not activated on the hosted Site.
-- Checked desktop and 390-pixel mobile layouts, keyboard controls, selected radio semantics, visible focus, and both themes. No horizontal overflow in the checked views.
+- Checked desktop and 390-pixel mobile layouts, keyboard controls, selected radio semantics, visible focus, and both themes. No horizontal overflow in the checked views. A 15-stop keyboard sample followed the visual order from the skip link through the footer; every stop had a solid visible outline and a target at least 44 px high.
+- Opened the mobile menu and measured all four navigation links at 44 px high. Opened the report dialog in a fresh anonymous context, verified focus entered the dialog, measured its close control at 44×44, closed it with Escape, and verified focus returned to the trigger.
+- Emulated `prefers-reduced-motion: reduce`; the media query matched, transition and animation durations resolved to 0.01 ms, and document scrolling resolved to `auto`.
 - Rechecked the discovery form at a 390-pixel viewport, shortened a clipped policy label, and verified the full label and unchanged document width. The temporary viewport override was reset afterward.
 - Performed a fresh-page navigation after development hot updates and confirmed no new error/warning logs in that check. Earlier hot-module React errors during dependency/source updates are not a production acceptance result.
 
@@ -51,12 +54,12 @@ The recovery drill first reproduced a combined SQL export that could not import 
 
 The original plan's Week 2 target is client-side search below 100 ms. A local desktop diagnostic on 2026-08-31 measured 240 searches in the development build: three cycles of 20 queries in each of four scopes. Broad prefixes rendered up to 60 results; the cases also included narrow prefixes, no matches, mixed case and whitespace. All measurements were below the target, with the following scope limits.
 
-| Picker scope | Samples | Median | 95th percentile | Maximum |
-| ------------ | ------- | ------ | --------------- | ------- |
-| Genres       | 60      | 11.6 ms | 44.6 ms        | 48.1 ms |
-| Gameplay     | 60      | 10.3 ms | 24.0 ms        | 30.5 ms |
-| Moods        | 60      | 11.4 ms | 36.1 ms        | 38.5 ms |
-| Hard No      | 60      | 11.2 ms | 35.8 ms        | 42.1 ms |
+| Picker scope | Samples | Median  | 95th percentile | Maximum |
+| ------------ | ------- | ------- | --------------- | ------- |
+| Genres       | 60      | 11.6 ms | 44.6 ms         | 48.1 ms |
+| Gameplay     | 60      | 10.3 ms | 24.0 ms         | 30.5 ms |
+| Moods        | 60      | 11.4 ms | 36.1 ms         | 38.5 ms |
+| Hard No      | 60      | 11.2 ms | 35.8 ms         | 42.1 ms |
 
 A temporary component probe started the clock in `onValueChange`, immediately before `setSearch`, and ended it at the second animation-frame callback after the search-state commit. It reported through DOM attributes. Every measured page state was visible. This covers component processing and a rendering opportunity, but excludes input delay before the handler and does not measure the complete page lifecycle. It must not be called INP, a production service-level result, or a slower-device guarantee. See [the browser's animation-frame contract](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) and [the fuller INP definition](https://web.dev/articles/inp).
 
@@ -74,17 +77,19 @@ The native-Worker check now reproduces the partial durable state in a new local 
 
 A later read-only recheck, completed at 13:55 UTC on the same day, found 430 unique tags, 20 sample games, 20 unique game versions, all four numbered migration records, and the demo-catalog completion marker. One admin account row was present; no account identity was retained in the report. The expected seed counts are now complete. This does not establish the cause of the earlier interruption or verify every stored payload. The preview tab had advanced to Google sign-in and was left untouched; authenticated browser flows remain unverified. `hosted-initialization-recheck.json` preserves the sequential page counts and their limits.
 
-### Quiz tabs and dialog close targets
+### Rendered accessibility and design-scale audit
 
-The design brief requires 44 by 44 CSS pixel pointer targets. A rendered desktop check found 36 px quiz tabs and a 28 by 28 px dialog close button. The tabs now have a 44 px minimum inside a 52 px container, and the shared close button is 44 by 44 px. The smaller mobile tab override was removed. This follows the design brief and the [W3C target-size guidance](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html).
+The design brief requires 44×44 CSS-pixel interaction targets, body copy of at least 16 px, visible focus, meaningful control names and image alternatives, reduced-motion handling, and logical headings. The first rendered sweep found 176 repeated target instances below 44 px and 96 below 24 px across shared header/footer links. The expanded quiz check also found an 18.6 px-high command input hidden inside a 44 px wrapper. Shared links now expose full 44 px targets, the command input itself has a 44 px minimum, quiz tabs remain 44 px inside a 52 px list, and the dialog close control remains 44×44. This follows the design brief and the [W3C target-size guidance](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html).
 
-At a 1280 by 720 viewport, all three quiz tabs and the report-dialog close button measured at least 44 by 44 px in both themes. Genre, Gameplay and Mood switching still worked, and the report dialog opened and closed without submitting a report. Both dialog layouts were visually inspected. No answers, preferences or video consent were submitted during this check.
+The final browser sweep covers 17 route states at desktop and 390 px mobile widths, including the live anonymous quiz. It includes links, buttons, inputs, visible labels for screen-reader-only radios, tabs, options and other focusable controls. It found no visible target below 44×44, no target below 24×24, no unnamed control, no visible image without `alt`, and no heading-level jump. Small paragraph text that remains is explicitly classified by the design as mono labels, metadata, helpers, or status text; no body-copy paragraph resolves below 16 px.
 
-A temporary wrapper also showed the real quiz fitting a 390 px frame in the light theme. Child DOM measurements were unavailable through the browser read interface, so this is a visual layout observation, not a numeric mobile pass or physical-device test. The second phone-width capture did not establish a dark-theme result. Removal of `public/qa-touch-target-layout-20260831.html` was blocked by execution policy; it remains untracked and must not enter a release. The release is built from a separate clean checkout without that file. `touch-target-audit.json` records the measurements, actions and limitations. This does not establish complete WCAG conformance or the full component-state matrix.
+The typography cascade now uses the design values instead of narrower-screen overrides: 19–23 px lead text, 16–17 px body descriptions, 16 px field text, 15 px buttons, 14 px navigation/tabs, 13 px status text, 12 px metadata/helpers, and 11 px mono labels. The six-step clue timeline uses full labels at larger widths and concise visible labels on mobile while retaining the full wording for assistive technology. Numeric and visual checks found no collision after that change.
+
+The anonymous browser flow advanced a clue, preserved a valid guess, locked and revealed three games, and rendered the final Daily summary. A separate state audit verified keyboard focus, the mobile menu, both theme switches, reduced motion, dialog focus containment, Escape close, and focus restoration. These checks use one current Edge build and simulated viewports; they are not physical-device coverage, a browser-market study, or complete WCAG certification. Removal of `public/qa-touch-target-layout-20260831.html` remains blocked by execution policy; the untracked file is excluded by building releases from a separate clean checkout.
 
 ## Artifacts and reruns
 
-Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `concurrency-smoke.json`, `recovery-drill.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, `discovery-benchmark.json`, and `tag-search-browser.json`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports and temporary fixture backups are not committed.
+Reproducible audit commands are listed in the README. Machine-readable outputs live in the parent workspace's `artifacts/`: `http-smoke.json`, `compiled-worker-smoke.json`, `concurrency-smoke.json`, `recovery-drill.json`, `contrast-audit.json`, `media-audit.json`, `resource-audit.json`, `discovery-benchmark.json`, `tag-search-browser.json`, `rendered-ui-audit-final.log`, `interactive-state-audit-final.log`, and `demo-quiz-flow-final.log`. Historical lint/removal reports preserve the before/after work; they are not current release failures. Personal account exports and temporary fixture backups are not committed.
 
 The resource audit is read-only. Its dependency and nested cache totals overlap. A development server plus its local workerd process used approximately 1.1 GiB during a long QA session; that is a development working-set observation, not a production memory guarantee. The temporary test bundle is removed by the harness. Durable local D1/R2 data is retained.
 

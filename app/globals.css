@@ -1279,6 +1279,7 @@ img {
 }
 .onboarding-sidebar {
   padding-top: 8px;
+  min-width: 0;
 }
 .onboarding-sidebar h2 {
   font-size: 24px;
@@ -1339,6 +1340,7 @@ img {
 .calibration-panel {
   padding: 35px 38px;
   min-height: 560px;
+  min-width: 0;
 }
 .calibration-progress {
   display: flex;
@@ -1642,6 +1644,10 @@ img {
   color: var(--accent-primary);
 }
 .hub-note p > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  vertical-align: middle;
   color: var(--accent-primary);
   text-decoration: underline;
   text-underline-offset: 3px;

@@ -1131,6 +1131,31 @@ void test('three zero-score reveals complete a Daily and award the streak once',
     3,
   );
 });
+void test('daily relevance survives reloads and remains scoped to its completed owner', async () => {
+  await game();
+  await game();
+  await game();
+  const player = await user(),
+    day = await h.dailyFor(player),
+    guess = {
+      genre: [tag('FPS')],
+      core: [tag('Deckbuilding')],
+      mood: [],
+    };
+  assert.equal(day.relevance, null);
+  await assert.rejects(h.rateDaily(player, day.id, 'mixed'), rejection(409));
+  for (const slot of day.slots) await finishRound(player, slot.id, guess);
+  assert.deepEqual(await h.rateDaily(player, day.id, 'mixed'), {
+    ok: true,
+    relevance: 'mixed',
+  });
+  assert.equal((await h.dailyFor(player)).relevance, 'mixed');
+  await assert.rejects(
+    h.rateDaily(await user(), day.id, 'yes'),
+    rejection(409),
+  );
+  await assert.rejects(h.rateDaily(player, day.id, 'invalid'), rejection(400));
+});
 void test('saving and following are idempotent and correctness never mutates taste', async () => {
   const g = await game(),
     player = await user(),

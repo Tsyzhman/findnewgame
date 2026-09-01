@@ -1,6 +1,7 @@
 import { env } from 'cloudflare:workers';
 import type {
   CandidateGame,
+  DailyRelevance,
   DailyView,
   GameContent,
   PublicUser,
@@ -38,6 +39,7 @@ type SetRow = {
   reset_at: number;
   catalog_mode: 'demo' | 'live';
   completed_at: number | null;
+  relevance: DailyRelevance | null;
 };
 export async function behaviorWeights(
   db: D1Database,
@@ -328,5 +330,32 @@ export async function dailyFor(user: PublicUser): Promise<DailyView> {
     currentStreak: streak.current,
     bestStreak: streak.best,
     catalogMode: set.catalog_mode,
+    relevance: set.relevance,
   };
+}
+
+export async function rateDaily(
+  user: PublicUser,
+  setId: string,
+  rating: string,
+): Promise<{ ok: true; relevance: DailyRelevance }> {
+  requireCondition(
+    ['yes', 'no', 'mixed'].includes(rating),
+    'Choose a relevance rating.',
+  );
+  const relevance = rating as DailyRelevance;
+  const updated = await (
+    await database()
+  )
+    .prepare(
+      'UPDATE daily_sets SET relevance=? WHERE id=? AND user_id=? AND completed_at IS NOT NULL',
+    )
+    .bind(relevance, setId, user.id)
+    .run();
+  requireCondition(
+    updated.meta.changes,
+    'Complete this Daily before rating it.',
+    409,
+  );
+  return { ok: true, relevance };
 }

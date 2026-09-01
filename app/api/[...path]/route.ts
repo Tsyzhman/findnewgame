@@ -16,7 +16,7 @@ import {
   verifyTurnstile,
   constantTimeEqual,
 } from '@/lib/server/security';
-import { dailyFor } from '@/lib/server/daily';
+import { dailyFor, rateDaily } from '@/lib/server/daily';
 import {
   interact,
   roundView,
@@ -175,23 +175,9 @@ async function handler(request: Request, context: Context): Promise<Response> {
     }
     if (route === 'daily/relevance' && method === 'POST') {
       const body = await jsonBody(request);
-      requireCondition(
-        ['yes', 'no', 'mixed'].includes(String(body.rating)),
-        'Choose a relevance rating.',
+      return response(
+        await rateDaily(user, String(body.setId), String(body.rating)),
       );
-      const db = await database();
-      const updated = await db
-        .prepare(
-          'UPDATE daily_sets SET relevance=? WHERE id=? AND user_id=? AND completed_at IS NOT NULL',
-        )
-        .bind(body.rating, body.setId, user.id)
-        .run();
-      requireCondition(
-        updated.meta.changes,
-        'Complete this Daily before rating it.',
-        409,
-      );
-      return response({ ok: true });
     }
     if (path[0] === 'round' && path[1]) {
       if (path[2] === 'asset' && method === 'GET')

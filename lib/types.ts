@@ -90,6 +90,7 @@ export interface DailySlot {
   title: string | null;
   accuracy: number | null;
 }
+export type DailyRelevance = 'yes' | 'mixed' | 'no';
 export interface DailyView {
   id: string;
   date: string;
@@ -103,6 +104,7 @@ export interface DailyView {
   currentStreak: number;
   bestStreak: number;
   catalogMode: 'demo' | 'live';
+  relevance: DailyRelevance | null;
 }
 export interface RoundView {
   id: string;

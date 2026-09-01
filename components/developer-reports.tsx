@@ -13,6 +13,7 @@ import {
   YAxis,
 } from 'recharts';
 import { api, useTags } from '@/lib/api';
+import { formatCount } from '@/lib/format';
 import {
   DeveloperShell,
   ImageField,
@@ -233,7 +234,9 @@ export function CalibrationPage({ gameId }: { gameId: string }) {
                               {stage.pairedInformationGain == null
                                 ? '—'
                                 : `${stage.pairedInformationGain > 0 ? '+' : ''}${stage.pairedInformationGain.toFixed(1)} pp`}
-                              <small>{stage.pairedSampleSize} pairs</small>
+                              <small>
+                                {formatCount(stage.pairedSampleSize, 'pair')}
+                              </small>
                             </td>
                           </tr>
                         ))}

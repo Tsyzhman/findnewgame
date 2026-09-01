@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { api, useMe, useTags, signInPath } from '@/lib/api';
 import { CONFIG, EMPTY_GUESS } from '@/lib/config';
+import { countNoun, formatCount } from '@/lib/format';
 import type {
   DailyView,
   GuessSnapshot,
@@ -259,7 +260,7 @@ export function GamePlayer() {
             </div>
             <span className="points-available">
               <Sparkles size={17} />
-              {round.maxScore.toLocaleString('en-US')} points available
+              {formatCount(round.maxScore, 'point')} available
             </span>
           </div>
           <div className="quiz-layout">
@@ -634,7 +635,10 @@ function RoundResult({
         </h1>
         <p>
           {result.accuracy >= 70
-            ? `You understood it in ${round.availableStages.filter((s) => s <= result.stage).length} clues.`
+            ? `You understood it in ${formatCount(
+                round.availableStages.filter((s) => s <= result.stage).length,
+                'clue',
+              )}.`
             : 'Every first impression tells the developer something useful.'}
         </p>
       </div>
@@ -699,7 +703,7 @@ function RoundResult({
           <span className="eyebrow">YOUR FIRST IMPRESSION, SCORED</span>
           <div className="score-number">
             {result.score.toLocaleString('en-US')}
-            <span>points</span>
+            <span>{countNoun(result.score, 'point')}</span>
           </div>
           <div className="score-stats">
             <span>
@@ -801,8 +805,10 @@ function PlusMark() {
   return <span aria-hidden="true">＋</span>;
 }
 function DailySummary({ daily, demo }: { daily: DailyView; demo: boolean }) {
-  const [rated, setRated] = useState(false),
+  const client = useQueryClient(),
+    [pendingRating, setPendingRating] = useState<string | null>(null),
     [error, setError] = useState<unknown>(null);
+  const rated = daily.relevance !== null;
   return (
     <>
       <div className="summary-heading">
@@ -825,7 +831,10 @@ function DailySummary({ daily, demo }: { daily: DailyView; demo: boolean }) {
         <div className="summary-total">
           <span>TODAY’S SCORE</span>
           <strong>{daily.totalScore.toLocaleString('en-US')}</strong>
-          <small>points from {daily.slots.length} discoveries</small>
+          <small>
+            {countNoun(daily.totalScore, 'point')} from{' '}
+            {formatCount(daily.slots.length, 'discovery', 'discoveries')}
+          </small>
         </div>
         <div className="summary-games">
           {daily.slots.map((slot) => (
@@ -852,18 +861,32 @@ function DailySummary({ daily, demo }: { daily: DailyView; demo: boolean }) {
           </p>
           {!rated && (
             <div className="inline-actions">
-              {['yes', 'mixed', 'no'].map((rating) => (
+              {(['yes', 'mixed', 'no'] as const).map((rating) => (
                 <ActionButton
                   key={rating}
                   secondary
+                  busy={pendingRating === rating}
+                  disabled={pendingRating !== null}
                   onClick={async () => {
+                    setPendingRating(rating);
+                    setError(null);
                     try {
-                      await api('daily/relevance', {
+                      const updated = await api<{
+                        relevance: DailyView['relevance'];
+                      }>('daily/relevance', {
                         body: { setId: daily.id, rating },
                       });
-                      setRated(true);
+                      client.setQueryData<DailyView>(
+                        ['daily', 'player'],
+                        (current) =>
+                          current?.id === daily.id
+                            ? { ...current, relevance: updated.relevance }
+                            : current,
+                      );
                     } catch (e) {
                       setError(e);
+                    } finally {
+                      setPendingRating(null);
                     }
                   }}
                 >

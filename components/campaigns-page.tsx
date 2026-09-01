@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { api, useMe, useTags } from '@/lib/api';
 import type { AudienceTarget } from '@/lib/advertising';
+import { formatCount } from '@/lib/format';
 import {
   DeveloperShell,
   ImageField,
@@ -428,9 +429,7 @@ export function CampaignsPage() {
                   ? money(draft.impressions * billing.data.impressionPriceCents)
                   : '—'}
               </p>
-              <p>
-                {draft.impressions.toLocaleString('en-US')} viewable impressions
-              </p>
+              <p>{formatCount(draft.impressions, 'viewable impression')}</p>
               <ul className="check-list">
                 <li>Moderation before delivery</li>
                 <li>Payment before activation</li>
@@ -482,8 +481,8 @@ export function CampaignsPage() {
                   </div>
                   <p>
                     {c.delivered.toLocaleString('en-US')} /{' '}
-                    {c.paid_impressions.toLocaleString('en-US')} paid
-                    impressions · {c.clicks} clicks ·{' '}
+                    {formatCount(c.paid_impressions, 'paid impression')} ·{' '}
+                    {formatCount(c.clicks, 'click')} ·{' '}
                     {c.delivered
                       ? ((100 * c.clicks) / c.delivered).toFixed(1)
                       : '0.0'}

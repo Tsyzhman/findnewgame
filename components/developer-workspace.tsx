@@ -14,6 +14,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { api, assetUrl, errorMessage, useMe } from '@/lib/api';
+import { formatCount } from '@/lib/format';
 import type { GameContent } from '@/lib/types';
 import {
   ActionButton,
@@ -270,8 +271,11 @@ export function DeveloperDashboard() {
                 </div>
                 <h2>{game.content.title}</h2>
                 <p>
-                  {game.sample_size} independent first impressions · targets
-                  frozen per version
+                  {formatCount(
+                    game.sample_size,
+                    'independent first impression',
+                  )}{' '}
+                  · targets frozen per version
                 </p>
                 {game.moderation_note && (
                   <p className="moderation-note">

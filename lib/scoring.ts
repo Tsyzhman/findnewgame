@@ -1,4 +1,5 @@
 import { CONFIG } from './config.ts';
+import { formatCount } from './format.ts';
 import type {
   GameContent,
   GuessSnapshot,
@@ -69,5 +70,8 @@ export function spoilerFreeShare(
   date: string,
   results: { score: number; accuracy: number; stage: number }[],
 ): string {
-  return `FindNewGame · ${date}\n${results.map((r) => Array.from({ length: 6 }, (_, i) => (i < r.stage - 1 ? '⬜' : i === r.stage - 1 ? (r.accuracy >= 70 ? '🟩' : r.accuracy >= 35 ? '🟨' : '🟦') : '⬛')).join('')).join('\n')}\n${results.reduce((n, r) => n + r.score, 0).toLocaleString('en-US')} points · ${results.length}/3 games\nThree unknown games. One new discovery.`;
+  return `FindNewGame · ${date}\n${results.map((r) => Array.from({ length: 6 }, (_, i) => (i < r.stage - 1 ? '⬜' : i === r.stage - 1 ? (r.accuracy >= 70 ? '🟩' : r.accuracy >= 35 ? '🟨' : '🟦') : '⬛')).join('')).join('\n')}\n${formatCount(
+    results.reduce((n, r) => n + r.score, 0),
+    'point',
+  )} · ${results.length}/3 games\nThree unknown games. One new discovery.`;
 }

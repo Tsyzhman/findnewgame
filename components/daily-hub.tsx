@@ -14,6 +14,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { api, useMe } from '@/lib/api';
+import { formatCount } from '@/lib/format';
 import type { DailyView } from '@/lib/types';
 import {
   AuthGate,
@@ -142,7 +143,7 @@ export function DailyHub() {
                 <h2>{slot.title ?? `Mystery game ${i + 1}`}</h2>
                 <p>
                   {slot.status === 'complete'
-                    ? `${slot.score?.toLocaleString('en-US')} points · ${slot.accuracy}% accuracy`
+                    ? `${formatCount(slot.score ?? 0, 'point')} · ${slot.accuracy}% accuracy`
                     : 'An unknown game. Your fresh perspective.'}
                 </p>
                 <span className="text-link">
@@ -195,7 +196,7 @@ export function DailyHub() {
           value={
             <>
               <Flame size={24} />
-              {daily.currentStreak} days
+              {formatCount(daily.currentStreak, 'day')}
             </>
           }
           note="Every completed three counts"
@@ -212,7 +213,7 @@ export function DailyHub() {
         />
         <Metric
           label="Personal best streak"
-          value={`${daily.bestStreak} days`}
+          value={formatCount(daily.bestStreak, 'day')}
           note="No perfect guesses required"
         />
       </div>

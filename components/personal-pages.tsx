@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { api, assetUrl, useMe, useTags } from '@/lib/api';
 import { downloadBlob } from '@/lib/download';
+import { countNoun, formatCount } from '@/lib/format';
 import type { GameContent } from '@/lib/types';
 import {
   ActionButton,
@@ -417,7 +418,7 @@ export function HistoryPage() {
                         ?.steam_name ?? 'Genre'
                     }
                     value={`${Math.round(s.accuracy)}%`}
-                    note={`${s.n} games`}
+                    note={formatCount(s.n, 'game')}
                   />
                 ))}
               </div>
@@ -444,7 +445,7 @@ export function HistoryPage() {
                     </div>
                     <strong>
                       {day.totalScore.toLocaleString('en-US')}
-                      <small> points</small>
+                      <small> {countNoun(day.totalScore, 'point')}</small>
                     </strong>
                   </header>
                   {day.rounds.length ? (
@@ -458,7 +459,10 @@ export function HistoryPage() {
                         <span>{r.title}</span>
                         <span>
                           {Math.round(r.accuracy)}% match{' '}
-                          <b>{r.score.toLocaleString('en-US')} pts</b>
+                          <b>
+                            {r.score.toLocaleString('en-US')}{' '}
+                            {countNoun(r.score, 'pt')}
+                          </b>
                           <ArrowRight size={16} />
                         </span>
                       </Link>

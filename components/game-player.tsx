@@ -11,6 +11,7 @@ import {
   Check,
   CircleHelp,
   Eye,
+  ExternalLink,
   Flag,
   ImageIcon,
   Layers3,
@@ -37,6 +38,7 @@ import { CONFIG, EMPTY_GUESS } from '@/lib/config';
 import { countNoun, formatCount } from '@/lib/format';
 import type {
   DailyView,
+  GameContent,
   GuessSnapshot,
   RoundView,
   SteamTag,
@@ -61,9 +63,7 @@ const CLUE_TIMELINE_LABELS = [
   { full: 'Artwork', compact: 'Artwork' },
   { full: 'Screenshot', compact: 'Screen' },
   { full: 'Gallery', compact: 'Gallery' },
-  { full: '5 seconds', compact: '5 sec' },
-  { full: '15 seconds', compact: '15 sec' },
-  { full: 'Description', compact: 'Details' },
+  { full: 'Trailer / teaser', compact: 'Trailer' },
 ] as const;
 
 export function GamePlayer() {
@@ -80,6 +80,7 @@ export function GamePlayer() {
     [busy, setBusy] = useState(false),
     [guess, setGuess] = useState<GuessSnapshot>({ ...EMPTY_GUESS }),
     [group, setGroup] = useState('genre'),
+    [viewedStage, setViewedStage] = useState(1),
     [guessRoundKey, setGuessRoundKey] = useState('');
   const siteKey = me.data?.site.turnstileSiteKey ?? null;
   const demoSession = useQuery({
@@ -117,6 +118,7 @@ export function GamePlayer() {
     setGuess(structuredClone(round.guesses));
     setError(null);
     setGroup('genre');
+    setViewedStage(round.stage);
   }
   if (me.isPending || tagQuery.isPending) return <Loading />;
   if (me.error || tagQuery.error)
@@ -271,44 +273,54 @@ export function GamePlayer() {
                   {String(round.slot).padStart(2, '0')}
                 </span>
                 <span>
-                  CLUE {round.availableStages.indexOf(round.stage) + 1} OF{' '}
-                  {round.availableStages.length}
+                  VIEWING CLUE {round.availableStages.indexOf(viewedStage) + 1}{' '}
+                  OF {round.availableStages.length}
                 </span>
               </div>
-              <ClueView key={`${round.id}:${round.stage}`} round={round} />
+              <ClueView
+                key={`${round.id}:${viewedStage}:${round.stage}`}
+                round={round}
+                stage={viewedStage}
+              />
               <ol className="clue-timeline" aria-label="Clue progression">
                 {CONFIG.stageNames.map((name, index) => {
                   const number = index + 1,
                     available = round.availableStages.includes(number),
-                    Icon = [
-                      ImageIcon,
-                      ImageIcon,
-                      Layers3,
-                      Video,
-                      Video,
-                      CircleHelp,
-                    ][index];
+                    unlocked = available && number <= round.stage,
+                    Icon = [ImageIcon, ImageIcon, Layers3, Video][index];
                   return (
                     <li
                       key={name}
-                      className={`${number === round.stage ? 'active' : number < round.stage ? 'unlocked' : ''} ${!available ? 'unavailable' : ''}`}
-                      aria-current={number === round.stage ? 'step' : undefined}
+                      className={`${number === viewedStage ? 'active' : unlocked ? 'unlocked' : ''} ${!available ? 'unavailable' : ''}`}
                     >
-                      <span>
-                        {number < round.stage && available ? (
-                          <Check size={14} />
-                        ) : (
-                          <Icon size={15} />
-                        )}
-                      </span>
-                      <small>
-                        <span className="clue-label-full">
-                          {CLUE_TIMELINE_LABELS[index].full}
+                      <button
+                        type="button"
+                        disabled={!unlocked}
+                        onClick={() => setViewedStage(number)}
+                        aria-current={
+                          number === viewedStage ? 'step' : undefined
+                        }
+                        aria-label={`${name} clue${number === round.stage ? ', latest unlocked clue' : ''}`}
+                      >
+                        <span>
+                          {number < round.stage && available ? (
+                            <Check size={14} />
+                          ) : (
+                            <Icon size={15} />
+                          )}
                         </span>
-                        <span className="clue-label-compact" aria-hidden="true">
-                          {CLUE_TIMELINE_LABELS[index].compact}
-                        </span>
-                      </small>
+                        <small>
+                          <span className="clue-label-full">
+                            {CLUE_TIMELINE_LABELS[index].full}
+                          </span>
+                          <span
+                            className="clue-label-compact"
+                            aria-hidden="true"
+                          >
+                            {CLUE_TIMELINE_LABELS[index].compact}
+                          </span>
+                        </small>
+                      </button>
                       {!available && (
                         <span className="sr-only">
                           not available for this sample
@@ -320,9 +332,12 @@ export function GamePlayer() {
               </ol>
               <div className="clue-explainer">
                 <LockKeyhole size={14} />
-                <p>Your tag match is revealed when you lock your guess.</p>
+                <p>
+                  Revisit any unlocked clue. Points stay tied to the latest clue
+                  you requested.
+                </p>
               </div>
-              {round.availableStages.length < 6 && (
+              {!round.availableStages.includes(4) && (
                 <p className="asset-notice">
                   This sample has no verified YouTube trailer. Missing video
                   clues are skipped; scores still use the original clue values.
@@ -363,7 +378,7 @@ export function GamePlayer() {
                     tags={tags}
                     group="genre"
                     label="Genre tags"
-                    max={3}
+                    max={CONFIG.maxGuessTagsPerGroup}
                     value={guess.genre}
                     onChange={(v) => setGuess({ ...guess, genre: v })}
                     disabled={busy}
@@ -380,14 +395,14 @@ export function GamePlayer() {
                 </TabsContent>
                 <TabsContent value="core">
                   <p className="picker-instruction">
-                    Choose 1–4 things you think you’d do.
+                    Choose 1–3 things you think you’d do.
                   </p>
                   <TagPicker
                     compact
                     tags={tags}
                     group="core"
                     label="Gameplay tags"
-                    max={4}
+                    max={CONFIG.maxGuessTagsPerGroup}
                     value={guess.core}
                     onChange={(v) => setGuess({ ...guess, core: v })}
                     disabled={busy}
@@ -402,7 +417,7 @@ export function GamePlayer() {
                     tags={tags}
                     group="mood"
                     label="Mood tags"
-                    max={3}
+                    max={CONFIG.maxGuessTagsPerGroup}
                     value={guess.mood}
                     onChange={(v) => setGuess({ ...guess, mood: v })}
                     disabled={busy}
@@ -458,7 +473,8 @@ export function GamePlayer() {
                   disabled={busy}
                   onClick={() => submit('clue')}
                 >
-                  {round.stage === 6
+                  {round.stage ===
+                  round.availableStages[round.availableStages.length - 1]
                     ? 'Reveal the game'
                     : 'I need another clue'}{' '}
                   <ArrowRight size={16} />
@@ -484,46 +500,41 @@ export function GamePlayer() {
 function CompassIcon() {
   return <Sparkles size={15} />;
 }
-function ClueView({ round }: { round: RoundView }) {
+function ClueView({ round, stage }: { round: RoundView; stage: number }) {
   const [activeImage, setActiveImage] = useState(0),
     [videoLoaded, setVideoLoaded] = useState(false),
     [failed, setFailed] = useState(false),
     [retry, setRetry] = useState(0);
-  const image =
-    round.stage === 1
-      ? round.capsule
-      : (round.screenshots[activeImage] ?? round.capsule);
+  const gallery = round.screenshots.slice(1),
+    image =
+      stage === 1
+        ? round.capsule
+        : stage === 2
+          ? (round.screenshots[0] ?? round.capsule)
+          : (gallery[activeImage] ?? round.capsule);
   return (
     <>
-      <div
-        className={`quiz-media ${round.stage === 6 ? 'description-media' : ''} ${round.stage === 4 || round.stage === 5 ? 'trailer-media' : ''}`}
-      >
-        {(round.stage === 4 || round.stage === 5) && round.youtubeId ? (
+      <div className={`quiz-media ${stage === 4 ? 'trailer-media' : ''}`}>
+        {stage === 4 && round.youtubeId ? (
           videoLoaded ? (
             <TrailerClip
-              key={`${round.stage}-${retry}`}
+              key={`${stage}-${retry}`}
               youtubeId={round.youtubeId}
-              seconds={round.stage === 4 ? 5 : 15}
             />
           ) : (
             <div className="video-consent">
               <Video size={34} />
-              <h3>A little motion. A new perspective.</h3>
+              <h3>Trailer or teaser. Your call.</h3>
               <p>
                 This clue loads YouTube. No video is loaded before you choose to
-                play. YouTube may show the video’s title or branding.
+                play. The full player has its own controls and may show the
+                video’s title or branding.
               </p>
               <ActionButton onClick={() => setVideoLoaded(true)}>
-                <Play size={17} /> Play {round.stage === 4 ? '5' : '15'} seconds
+                <Play size={17} /> Load trailer / teaser
               </ActionButton>
             </div>
           )
-        ) : round.stage === 6 ? (
-          <div className="description-clue">
-            <span className="eyebrow">THE FINAL CLUE</span>
-            <h3>In the developer’s words</h3>
-            <p>{round.description}</p>
-          </div>
         ) : failed ? (
           <div className="media-error">
             <ImageIcon size={32} />
@@ -543,24 +554,26 @@ function ClueView({ round }: { round: RoundView }) {
             key={image + retry}
             src={`${image}${image.includes('?') ? '&' : '?'}v=${retry}`}
             alt={
-              round.stage === 1
+              stage === 1
                 ? 'Title-free mystery game artwork'
-                : `Mystery gameplay screenshot ${activeImage + 1}`
+                : stage === 2
+                  ? 'First mystery gameplay screenshot'
+                  : `Mystery gallery screenshot ${activeImage + 2}`
             }
             onError={() => setFailed(true)}
           />
         )}
-        {round.stage === 1 && !failed && (
+        {stage === 1 && !failed && (
           <span className="media-corner-label">THE FIRST IMPRESSION</span>
         )}
       </div>
-      {round.stage === 3 && round.screenshots.length >= 3 && (
+      {stage === 3 && gallery.length >= 2 && (
         <div className="screenshot-strip">
-          {round.screenshots.map((src, i) => (
+          {gallery.map((src, i) => (
             <button
               key={src}
               className={activeImage === i ? 'active' : ''}
-              aria-label={`View screenshot ${i + 1}`}
+              aria-label={`View gallery screenshot ${i + 2}`}
               aria-pressed={activeImage === i}
               onClick={() => {
                 setActiveImage(i);
@@ -572,16 +585,52 @@ function ClueView({ round }: { round: RoundView }) {
           ))}
         </div>
       )}
-      {(round.stage === 4 || round.stage === 5) && videoLoaded && (
+      {stage === 4 && videoLoaded && (
         <Button
           variant="ghost"
           className="text-link"
           onClick={() => setRetry(retry + 1)}
         >
-          <RefreshCw size={14} /> Replay this segment
+          <RefreshCw size={14} /> Reload trailer / teaser
         </Button>
       )}
     </>
+  );
+}
+function gameDestinations(game: GameContent) {
+  const links = [
+    game.officialUrl
+      ? {
+          label: 'Official website',
+          detail: new URL(game.officialUrl).hostname.replace(/^www\./, ''),
+          href: game.officialUrl,
+          tracksSteam: false,
+        }
+      : null,
+    {
+      label: 'Steam Store',
+      detail: 'Store page',
+      href: game.steamUrl,
+      tracksSteam: true,
+    },
+    {
+      label: 'Community Hub',
+      detail: 'Steam discussions and updates',
+      href: `https://steamcommunity.com/app/${game.steamAppId}`,
+      tracksSteam: false,
+    },
+    game.youtubeId
+      ? {
+          label: 'Trailer / teaser',
+          detail: 'Watch on YouTube',
+          href: `https://www.youtube.com/watch?v=${game.youtubeId}`,
+          tracksSteam: false,
+        }
+      : null,
+  ].filter((link): link is NonNullable<typeof link> => link !== null);
+  return links.filter(
+    (link, index) =>
+      links.findIndex((item) => item.href === link.href) === index,
   );
 }
 function RoundResult({
@@ -598,6 +647,7 @@ function RoundResult({
   hasNext: boolean;
 }) {
   const result = round.result!,
+    destinations = gameDestinations(result.game),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     [saved, setSaved] = useState(result.saved),
@@ -655,18 +705,30 @@ function RoundResult({
             <p className="byline">by {result.game.developer}</p>
             <p className="game-description">{result.game.description}</p>
             <TagChips ids={result.game.tagIds.slice(0, 8)} tags={tags} />
+            <div className="game-destinations">
+              <p className="eyebrow">CONTINUE WITH THE GAME</p>
+              <div>
+                {destinations.map((destination) => (
+                  <a
+                    key={destination.href}
+                    href={destination.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      if (destination.tracksSteam)
+                        void interaction('steam_click');
+                    }}
+                  >
+                    <span>
+                      <strong>{destination.label}</strong>
+                      <small>{destination.detail}</small>
+                    </span>
+                    <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            </div>
             <div className="inline-actions">
-              <a
-                className="button-primary"
-                href={result.game.steamUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  void interaction('steam_click');
-                }}
-              >
-                See it on Steam <ArrowRight size={17} />
-              </a>
               {demo ? (
                 <a
                   className="button-secondary"

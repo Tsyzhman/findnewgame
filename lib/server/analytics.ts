@@ -1,6 +1,6 @@
 import { CONFIG } from '@/lib/config';
 import type { GameContent, GuessSnapshot, PublicUser } from '@/lib/types';
-import { scoreGuess } from '@/lib/scoring';
+import { clueStageFor, scoreGuess } from '@/lib/scoring';
 import { all, database, first, tags } from './database';
 import { ownedGame } from './developer';
 import { requireCondition } from './security';
@@ -89,7 +89,7 @@ export async function calibrationReport(
   const contentByVariant = new Map(
     variantRows.map((v) => [v.id, JSON.parse(v.content_json) as GameContent]),
   );
-  const buckets = Array.from({ length: 6 }, () => ({
+  const buckets = Array.from({ length: CONFIG.stageNames.length }, () => ({
     participants: new Set<string>(),
     accuracy: 0,
     yes: 0,
@@ -97,18 +97,41 @@ export async function calibrationReport(
     pairedGain: 0,
     pairs: 0,
   }));
-  const misconceptions = new Map<number, Set<string>>(),
-    matrix = new Map<string, Set<string>>(),
-    previous = new Map<string, number>();
+  const canonicalSnapshots = new Map<
+    string,
+    {
+      snapshot: (typeof snapshots)[number];
+      result: (typeof results)[number];
+      content: GameContent;
+      stage: number;
+    }
+  >();
   for (const snapshot of snapshots) {
     const result = byId.get(snapshot.assignment_id);
     if (!result) continue;
     const content =
         (result.variant_id ? contentByVariant.get(result.variant_id) : null) ??
         baseContent,
-      guess: GuessSnapshot = JSON.parse(snapshot.guess_json);
-    const score = scoreGuess(guess, content.targets, snapshot.stage, tags);
-    const bucket = buckets[snapshot.stage - 1];
+      stage = clueStageFor(content, snapshot.stage);
+    canonicalSnapshots.set(`${snapshot.assignment_id}:${stage}`, {
+      snapshot,
+      result,
+      content,
+      stage,
+    });
+  }
+  const misconceptions = new Map<number, Set<string>>(),
+    matrix = new Map<string, Set<string>>(),
+    previous = new Map<string, number>();
+  for (const {
+    snapshot,
+    result,
+    content,
+    stage,
+  } of canonicalSnapshots.values()) {
+    const guess: GuessSnapshot = JSON.parse(snapshot.guess_json);
+    const score = scoreGuess(guess, content.targets, stage, tags);
+    const bucket = buckets[stage - 1];
     bucket.participants.add(result.user_id);
     bucket.accuracy += score.accuracy;
     if (guess.wouldClick === 'yes') bucket.yes++;
@@ -119,7 +142,7 @@ export async function calibrationReport(
       bucket.pairs++;
     }
     previous.set(snapshot.assignment_id, score.accuracy);
-    if (snapshot.stage === 1)
+    if (stage === 1)
       for (const guessed of guess.genre) {
         const set = misconceptions.get(guessed) ?? new Set();
         set.add(result.user_id);

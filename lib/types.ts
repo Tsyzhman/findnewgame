@@ -39,6 +39,7 @@ export interface GameContent {
   publisher: string;
   steamUrl: string;
   steamAppId: number;
+  officialUrl?: string | null;
   releaseState: 'released' | 'coming_soon' | 'early_access';
   description: string;
   capsule: string;
@@ -117,7 +118,6 @@ export interface RoundView {
   capsule: string;
   screenshots: string[];
   youtubeId: string | null;
-  description: string | null;
   minStageDurationMs: number;
   isDemo: boolean;
   repeatExposure: boolean;

@@ -1,6 +1,6 @@
 import { CONFIG, EMPTY_GUESS } from '@/lib/config';
 import type { GameContent, PublicUser, RoundView } from '@/lib/types';
-import { availableStages, scoreGuess } from '@/lib/scoring';
+import { availableStages, clueStageFor, scoreGuess } from '@/lib/scoring';
 import { activeTags, all, database, first, id, tags } from './database';
 import { requireCondition } from './security';
 import { validateGuess } from './validation';
@@ -68,7 +68,8 @@ export async function roundView(
 ): Promise<RoundView> {
   const db = await database(),
     row = await ownedRound(db, user, roundId),
-    content = contentOf(row);
+    content = contentOf(row),
+    currentStage = clueStageFor(content, row.stage);
   const last = await first<{ guess_json: string }>(
     db,
     'SELECT guess_json FROM quiz_stage_guesses WHERE assignment_id=? ORDER BY stage DESC LIMIT 1',
@@ -77,30 +78,20 @@ export async function roundView(
   const demoSuffix = user.isDemo ? '?demo=1' : '';
   const view: RoundView = {
     id: row.id,
-    stage: row.stage,
+    stage: currentStage,
     slot: row.slot,
     status: row.status,
     availableStages: availableStages(content),
-    maxScore: CONFIG.stagePoints[row.stage - 1],
+    maxScore: CONFIG.stagePoints[currentStage - 1],
     guesses: last ? JSON.parse(last.guess_json) : { ...EMPTY_GUESS },
     capsule: `/api/round/${row.id}/asset/0${demoSuffix}`,
     screenshots:
-      row.stage >= 2
+      currentStage >= 2
         ? content.screenshots
-            .slice(0, row.stage >= 3 ? 5 : 1)
+            .slice(0, currentStage >= 3 ? 5 : 1)
             .map((_, i) => `/api/round/${row.id}/asset/${i + 1}${demoSuffix}`)
         : [],
-    youtubeId: row.stage >= 4 ? content.youtubeId : null,
-    description:
-      row.stage >= 6
-        ? content.description.replace(
-            new RegExp(
-              content.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-              'gi',
-            ),
-            'this game',
-          )
-        : null,
+    youtubeId: currentStage >= 4 ? content.youtubeId : null,
     minStageDurationMs: CONFIG.minStageDurationMs,
     isDemo: user.isDemo || !!row.is_demo || row.catalog_mode === 'demo',
     repeatExposure: !!row.repeat_exposure,
@@ -122,8 +113,8 @@ export async function roundView(
     );
     const population = await first<{ n: number; earlier: number }>(
       db,
-      'SELECT COUNT(DISTINCT user_id) n,SUM(CASE WHEN stage>? THEN 1 ELSE 0 END) earlier FROM quiz_final_results WHERE game_id=? AND version_id=? AND qualified=1 AND repeat_exposure=0',
-      result.stage,
+      `SELECT COUNT(DISTINCT user_id) n,SUM(CASE WHEN (CASE WHEN stage>${availableStages(content).at(-1) ?? 1} THEN ${availableStages(content).at(-1) ?? 1} ELSE stage END)>? THEN 1 ELSE 0 END) earlier FROM quiz_final_results WHERE game_id=? AND version_id=? AND qualified=1 AND repeat_exposure=0`,
+      clueStageFor(content, result.stage),
       row.game_id,
       row.version_id,
     );
@@ -140,7 +131,7 @@ export async function roundView(
       game: content,
       score: result.score,
       accuracy: result.accuracy,
-      stage: result.stage,
+      stage: clueStageFor(content, result.stage),
       ...JSON.parse(result.result_json),
       isIllustrative: view.isDemo,
       saved: interactions.some((i) => i.kind === 'save'),
@@ -161,7 +152,8 @@ export async function submitGuess(
   body: Record<string, unknown>,
 ): Promise<RoundView> {
   const db = await database(),
-    row = await ownedRound(db, user, roundId);
+    row = await ownedRound(db, user, roundId),
+    content = contentOf(row);
   const action = body.action;
   requireCondition(
     action === 'lock' || action === 'clue',
@@ -181,7 +173,7 @@ export async function submitGuess(
     'round_not_started',
   );
   requireCondition(
-    Number(body.stage) === row.stage,
+    Number(body.stage) === clueStageFor(content, row.stage),
     'This round has moved on. Your latest progress has been restored.',
     409,
     'stage_conflict',
@@ -195,9 +187,9 @@ export async function submitGuess(
     'too_fast',
   );
   const active = await activeTags(db),
-    content = contentOf(row),
     guess = validateGuess(body, active, action === 'lock');
-  const next = availableStages(content).find((stage) => stage > row.stage);
+  const currentStage = clueStageFor(content, row.stage),
+    next = availableStages(content).find((stage) => stage > currentStage);
   const finalize = action === 'lock' || !next;
   const self = await first(
     db,
@@ -235,7 +227,7 @@ export async function submitGuess(
       ),
   ];
   if (finalize) {
-    const result = scoreGuess(guess, content.targets, row.stage, tags);
+    const result = scoreGuess(guess, content.targets, currentStage, tags);
     statements.push(
       db
         .prepare(

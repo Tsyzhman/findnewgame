@@ -181,7 +181,7 @@ try {
       assert.equal(start.response.status, 200);
       assert.equal(start.data.result, null);
       assert.equal(start.data.youtubeId, null);
-      assert.equal(start.data.description, null);
+      assert.equal(Object.hasOwn(start.data, 'description'), false);
       const locked = await requestFetch(
         `${origin}/api/round/${id}/asset/3?demo=1`,
         {

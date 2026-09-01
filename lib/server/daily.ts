@@ -8,6 +8,7 @@ import type {
 } from '@/lib/types';
 import { CONFIG, EMPTY_TASTE } from '@/lib/config';
 import { selectDaily } from '@/lib/recommendation';
+import { clueStageFor } from '@/lib/scoring';
 import { localDate, nextLocalMidnight, streaks } from '@/lib/time';
 import {
   activeTags,
@@ -314,13 +315,14 @@ export async function dailyFor(user: PublicUser): Promise<DailyView> {
     date: set.local_date,
     timezone: set.timezone,
     resetAt: set.reset_at,
-    slots: slots.map(({ content_json, ...slot }) => ({
-      ...slot,
-      title:
-        slot.status === 'complete'
-          ? (JSON.parse(content_json) as GameContent).title
-          : null,
-    })),
+    slots: slots.map(({ content_json, ...slot }) => {
+      const content = JSON.parse(content_json) as GameContent;
+      return {
+        ...slot,
+        stage: clueStageFor(content, slot.stage),
+        title: slot.status === 'complete' ? content.title : null,
+      };
+    }),
     totalScore: slots.reduce((sum, r) => sum + (r.score ?? 0), 0),
     complete:
       slots.length === CONFIG.dailyCount &&

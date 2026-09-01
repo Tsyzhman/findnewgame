@@ -32,9 +32,11 @@ Decision records freeze eight tag-affinity features, the actual/requested policy
 
 ## Quiz and material boundaries
 
-The six possible stages are artwork, screenshot, gallery, five seconds of trailer, fifteen seconds of trailer, and description. Missing media produces an explicit available-stage sequence. Score ceilings are 1,000 / 800 / 650 / 500 / 350 / 150; weighted overlap gives partial credit. Would Click is captured separately and does not alter the score.
+The four possible stages are artwork, a standalone screenshot, a Gallery, and one full trailer or teaser. Gallery excludes the standalone screenshot and starts from the next distinct image. Missing video produces an explicit available-stage sequence. Score ceilings are 1,000 / 800 / 650 / 500; weighted overlap gives partial credit. Would Click is captured separately and does not alter the score. The developer’s store description is withheld until the completed reveal.
 
-The server owns stage progression, limits request speed, and prevents double completion. Title and target perception remain out of ordinary pre-reveal JSON, and mystery images are proxied through assignment authorization. A third-party trailer may still expose its own title or branding; the interface warns before consent. The YouTube IFrame API requests English controls and captions when available, pauses on hidden pages, and destroys the player when the segment ends or the component unmounts.
+The server owns monotonic stage progression, limits request speed, and prevents double completion. Backward navigation changes only the clue displayed in the client; it cannot restore points or unrequest a clue. Stored stage 5/6 assignments from the previous model are normalized to the last clue that exists for their material—Trailer when a verified video exists, Gallery otherwise—at API and analytics boundaries without rewriting historical rows. Title, description, target perception, and result destinations remain out of ordinary pre-reveal JSON, and mystery images are proxied through assignment authorization. A third-party trailer may still expose its own title or branding; the interface warns before consent. Consent mounts one privacy-enhanced YouTube iframe with native full-playback controls; changing clues or leaving the page unmounts it without application timers, global callbacks, or a retained player cache.
+
+After completion, the reveal can link to the validated official HTTPS website, canonical Steam Store page, derived Steam Community Hub, and validated YouTube trailer. These destinations are never exposed before the answer.
 
 Finishing all three games completes the Daily even with zero points. Result sharing contains points, dates, and clue progression, not game names or answer tags.
 

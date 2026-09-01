@@ -737,7 +737,7 @@ void test('inactive targets cannot enter a Daily and disabling a genre never wea
     await sql('UPDATE steam_tags SET is_active=1 WHERE id=?', fps).run();
   }
 });
-void test('the final description clue redacts a literal title while the completed reveal retains original content', async () => {
+void test('the store description stays hidden through every clue and appears only after reveal', async () => {
   const g = await game(),
     title = 'Test Game [2] + (Demo)',
     description = `${title} is a mystery. Discover ${title} through careful exploration.`;
@@ -746,13 +746,13 @@ void test('the final description clue redacts a literal title while the complete
     type: 'game',
     id: g.id,
     action: 'approve',
-    reason: 'Isolated description redaction fixture.',
+    reason: 'Isolated post-reveal description fixture.',
   });
   const player = await user(),
     day = await h.dailyFor(player),
     id = day.slots[0].id;
   await h.startRound(player, id);
-  for (let stage = 1; stage < 6; stage++) {
+  for (let stage = 1; stage < 4; stage++) {
     await ageStage(id);
     await h.submitGuess(player, id, {
       genre: [],
@@ -764,17 +764,15 @@ void test('the final description clue redacts a literal title while the complete
     });
   }
   const clue = await h.roundView(player, id);
-  assert.equal(
-    clue.description,
-    'this game is a mystery. Discover this game through careful exploration.',
-  );
+  assert.equal(Object.hasOwn(clue, 'description'), false);
+  assert.ok(!JSON.stringify(clue).includes(description));
   assert.equal(clue.result, null);
   await ageStage(id);
   const final = await h.submitGuess(player, id, {
     ...g.body.targets,
     wouldClick: 'yes',
     action: 'lock',
-    stage: 6,
+    stage: 4,
   });
   assert.equal(final.result.game.description, description);
 });
@@ -1018,7 +1016,7 @@ void test('quiz response withholds answers, gates later assets, checks ownership
     roundId = day.slots[0].id,
     view = await h.startRound(player, roundId);
   assert.equal(view.result, null);
-  assert.equal(view.description, null);
+  assert.equal(Object.hasOwn(view, 'description'), false);
   assert.equal(view.youtubeId, null);
   assert.deepEqual(view.screenshots, []);
   assert.ok(!JSON.stringify(view).includes(g.body.title));
@@ -1040,20 +1038,35 @@ void test('quiz response withholds answers, gates later assets, checks ownership
   await assert.rejects(
     h.submitGuess(player, roundId, {
       ...g.body.targets,
-      stage: 6,
+      core: [
+        tag('Building'),
+        tag('Combat'),
+        tag('Crafting'),
+        tag('Resource Management'),
+      ],
+      stage: 1,
+      action: 'lock',
+      wouldClick: 'yes',
+    }),
+    rejection(400),
+  );
+  await assert.rejects(
+    h.submitGuess(player, roundId, {
+      ...g.body.targets,
+      stage: 4,
       action: 'lock',
       wouldClick: 'yes',
     }),
     rejection(409, 'stage_conflict'),
   );
 });
-void test('all six clues advance once under retries; scores are server-owned and final results immutable', async () => {
+void test('all four clues advance once under retries; scores are server-owned and final results immutable', async () => {
   const g = await game(),
     player = await user(),
     day = await h.dailyFor(player),
     id = day.slots[0].id;
   await h.startRound(player, id);
-  for (let stage = 1; stage < 6; stage++) {
+  for (let stage = 1; stage < 4; stage++) {
     await ageStage(id);
     const body = {
       genre: [],
@@ -1074,12 +1087,12 @@ void test('all six clues advance once under retries; scores are server-owned and
   const result = await h.submitGuess(player, id, {
     ...g.body.targets,
     action: 'lock',
-    stage: 6,
+    stage: 4,
     wouldClick: 'yes',
     score: 999999,
     accuracy: 0,
   });
-  assert.equal(result.result.score, 150);
+  assert.equal(result.result.score, 500);
   assert.equal(result.result.accuracy, 100);
   const retry = await h.submitGuess(player, id, {
     genre: [],
@@ -1089,7 +1102,7 @@ void test('all six clues advance once under retries; scores are server-owned and
     stage: 1,
     action: 'clue',
   });
-  assert.equal(retry.result.score, 150);
+  assert.equal(retry.result.score, 500);
   assert.equal(
     (
       await sql(
@@ -1097,12 +1110,72 @@ void test('all six clues advance once under retries; scores are server-owned and
         id,
       ).first()
     ).n,
-    6,
+    4,
   );
   assert.equal(
     (await h.dailyFor(player)).complete,
     false,
     'one available game is not a complete three-game Daily',
+  );
+});
+void test('legacy in-progress stages finish through the new trailer stage without rewriting stored history', async () => {
+  const g = await game(),
+    player = await user(),
+    day = await h.dailyFor(player),
+    id = day.slots[0].id;
+  await h.startRound(player, id);
+  await sql(
+    'UPDATE daily_assignments SET stage=6,stage_opened_at=? WHERE id=?',
+    Date.now() - 1500,
+    id,
+  ).run();
+  assert.equal((await h.roundView(player, id)).stage, 4);
+  const result = await h.submitGuess(player, id, {
+    ...g.body.targets,
+    action: 'lock',
+    stage: 4,
+    wouldClick: 'yes',
+  });
+  assert.equal(result.result.stage, 4);
+  assert.equal(result.result.score, 500);
+  assert.equal(
+    (
+      await sql(
+        'SELECT stage FROM quiz_final_results WHERE assignment_id=?',
+        id,
+      ).first()
+    ).stage,
+    6,
+  );
+  assert.equal((await h.dailyFor(player)).slots[0].stage, 4);
+});
+void test('game submissions cap every target group at three and require HTTPS official links', async () => {
+  const g = await game(),
+    core = [
+      tag('Building'),
+      tag('Combat'),
+      tag('Crafting'),
+      tag('Resource Management'),
+    ];
+  await assert.rejects(
+    h.submitGame(
+      g.owner,
+      {
+        ...g.body,
+        tagIds: [...new Set([...g.body.tagIds, ...core])],
+        targets: { ...g.body.targets, core },
+      },
+      g.id,
+    ),
+    rejection(400),
+  );
+  await assert.rejects(
+    h.submitGame(
+      g.owner,
+      { ...g.body, officialUrl: 'http://insecure.example/game' },
+      g.id,
+    ),
+    rejection(400),
   );
 });
 void test('three zero-score reveals complete a Daily and award the streak once', async () => {

@@ -5,12 +5,14 @@ import type {
   SteamTag,
   TasteProfile,
 } from '@/lib/types';
+import { CONFIG } from '@/lib/config';
 import { belongsToGroup } from '@/lib/tag-groups';
 import {
   requireCondition,
   textField,
   imageReference,
   parseSteamUrl,
+  safeUrl,
   youtubeId,
 } from './security';
 export function tagIds(
@@ -88,9 +90,30 @@ export function validateGuess(
   lock: boolean,
 ): GuessSnapshot {
   const guess = {
-    genre: tagIds(body.genre, tags, lock ? 1 : 0, 3, 'Genre tags', 'genre'),
-    core: tagIds(body.core, tags, lock ? 1 : 0, 4, 'Gameplay tags', 'core'),
-    mood: tagIds(body.mood, tags, 0, 3, 'Mood tags', 'mood'),
+    genre: tagIds(
+      body.genre,
+      tags,
+      lock ? 1 : 0,
+      CONFIG.maxGuessTagsPerGroup,
+      'Genre tags',
+      'genre',
+    ),
+    core: tagIds(
+      body.core,
+      tags,
+      lock ? 1 : 0,
+      CONFIG.maxGuessTagsPerGroup,
+      'Gameplay tags',
+      'core',
+    ),
+    mood: tagIds(
+      body.mood,
+      tags,
+      0,
+      CONFIG.maxGuessTagsPerGroup,
+      'Mood tags',
+      'mood',
+    ),
     wouldClick: body.wouldClick as GuessSnapshot['wouldClick'],
   };
   requireCondition(
@@ -119,9 +142,30 @@ export function validateGame(
   );
   const raw = body.targets as Record<string, unknown>;
   const targets = {
-    genre: tagIds(raw.genre, tags, 1, 3, 'Target genres', 'genre'),
-    core: tagIds(raw.core, tags, 1, 4, 'Target gameplay', 'core'),
-    mood: tagIds(raw.mood, tags, 0, 3, 'Target moods', 'mood'),
+    genre: tagIds(
+      raw.genre,
+      tags,
+      1,
+      CONFIG.maxGuessTagsPerGroup,
+      'Target genres',
+      'genre',
+    ),
+    core: tagIds(
+      raw.core,
+      tags,
+      1,
+      CONFIG.maxGuessTagsPerGroup,
+      'Target gameplay',
+      'core',
+    ),
+    mood: tagIds(
+      raw.mood,
+      tags,
+      0,
+      CONFIG.maxGuessTagsPerGroup,
+      'Target moods',
+      'mood',
+    ),
   };
   requireCondition(
     [...targets.genre, ...targets.core, ...targets.mood].every((id) =>
@@ -152,6 +196,10 @@ export function validateGame(
     publisher,
     steamUrl: steam.url,
     steamAppId: steam.appId,
+    officialUrl:
+      body.officialUrl === null || body.officialUrl === ''
+        ? null
+        : safeUrl(body.officialUrl, 'Official website'),
     releaseState: body.releaseState as GameContent['releaseState'],
     description: textField(body.description, 'Short description', 30, 600),
     capsule: imageReference(body.capsule),

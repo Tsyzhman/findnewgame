@@ -13,6 +13,7 @@ import {
   assertUploadOwnership,
   parseSteamUrl,
   requireCondition,
+  safeUrl,
   textField,
 } from './security';
 import { validateGame } from './validation';
@@ -115,7 +116,7 @@ export async function submitGame(
   );
   requireCondition(
     content.youtubeId,
-    'Add a YouTube trailer so all six clue stages are available.',
+    'Add a YouTube trailer or teaser so the final clue is available.',
   );
   await assertUploadOwnership(db, user.id, [
     content.capsule,
@@ -278,11 +279,22 @@ export async function steamLookup(steamUrl: unknown) {
   const screenshots = Array.isArray(game.screenshots)
     ? (game.screenshots as { path_full: string }[])
     : [];
+  let officialUrl: string | null = null;
+  if (typeof game.website === 'string' && game.website.trim())
+    try {
+      officialUrl = safeUrl(
+        game.website.trim().replace(/^http:\/\//i, 'https://'),
+        'Official website',
+      );
+    } catch {
+      officialUrl = null;
+    }
   return {
     title: game.name,
     developer: (game.developers as string[] | undefined)?.[0] ?? '',
     publisher: (game.publishers as string[] | undefined)?.[0] ?? '',
     steamUrl: url,
+    officialUrl,
     description: (typeof game.short_description === 'string'
       ? game.short_description
       : ''
@@ -299,7 +311,7 @@ export async function steamLookup(steamUrl: unknown) {
       ? `https://store.steampowered.com/app/${(game.fullgame as { appid: string }).appid}/`
       : null,
     notice:
-      'Verify every imported field. Steam hero artwork can contain titles; use a title-free image. Add your own verified YouTube trailer and intended Steam tags.',
+      'Verify every imported field. Steam hero artwork can contain titles; use a title-free image. Add your own verified YouTube trailer or teaser and intended Steam tags.',
   };
 }
 

@@ -22,15 +22,8 @@ export const CONFIG = {
     DiscoveryMode,
     number
   >,
-  stagePoints: [1000, 800, 650, 500, 350, 150],
-  stageNames: [
-    'Artwork',
-    'First screenshot',
-    'Gallery',
-    'Trailer · 5 seconds',
-    'Trailer · 15 seconds',
-    'Description',
-  ],
+  stagePoints: [1000, 800, 650, 500],
+  stageNames: ['Artwork', 'First screenshot', 'Gallery', 'Trailer / teaser'],
   overlapThreshold: 0.8,
   diversityAttempts: 5,
   retestCooldownMs: 14 * 86_400_000,
@@ -50,6 +43,7 @@ export const CONFIG = {
   demoLifetimeMs: 24 * 60 * 60 * 1000,
   defaultImpressionPriceCents: 1,
   maxTagSelection: 20,
+  maxGuessTagsPerGroup: 3,
   maxCatalogSize: 3000,
 };
 export const EMPTY_TASTE = {

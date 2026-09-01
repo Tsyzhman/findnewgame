@@ -12,9 +12,16 @@ export function availableStages(game: GameContent): number[] {
     1,
     ...(game.screenshots.length ? [2] : []),
     ...(game.screenshots.length >= 3 ? [3] : []),
-    ...(game.youtubeId ? [4, 5] : []),
-    6,
+    ...(game.youtubeId ? [4] : []),
   ];
+}
+export function clueStage(stage: number): number {
+  return Math.min(Math.max(stage, 1), CONFIG.stageNames.length);
+}
+export function clueStageFor(game: GameContent, stage: number): number {
+  const stages = availableStages(game),
+    requested = clueStage(stage);
+  return [...stages].reverse().find((candidate) => candidate <= requested) ?? 1;
 }
 export function scoreGuess(
   guess: GuessSnapshot,
@@ -70,7 +77,7 @@ export function spoilerFreeShare(
   date: string,
   results: { score: number; accuracy: number; stage: number }[],
 ): string {
-  return `FindNewGame · ${date}\n${results.map((r) => Array.from({ length: 6 }, (_, i) => (i < r.stage - 1 ? '⬜' : i === r.stage - 1 ? (r.accuracy >= 70 ? '🟩' : r.accuracy >= 35 ? '🟨' : '🟦') : '⬛')).join('')).join('\n')}\n${formatCount(
+  return `FindNewGame · ${date}\n${results.map((r) => Array.from({ length: CONFIG.stageNames.length }, (_, i) => (i < clueStage(r.stage) - 1 ? '⬜' : i === clueStage(r.stage) - 1 ? (r.accuracy >= 70 ? '🟩' : r.accuracy >= 35 ? '🟨' : '🟦') : '⬛')).join('')).join('\n')}\n${formatCount(
     results.reduce((n, r) => n + r.score, 0),
     'point',
   )} · ${results.length}/3 games\nThree unknown games. One new discovery.`;

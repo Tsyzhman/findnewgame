@@ -10,6 +10,7 @@ import {
 } from '../lib/recommendation.ts';
 import {
   availableStages,
+  clueStageFor,
   scoreGuess,
   spoilerFreeShare,
 } from '../lib/scoring.ts';
@@ -46,10 +47,14 @@ void test('every sample uses unique canonical tags in the correct quiz group and
   assert.ok(
     tags.every((tag) => Object.keys(tag.localizations_json).length === 0),
   );
+  assert.equal(catalog.filter((game) => game.officialUrl !== null).length, 18);
   for (const game of catalog) {
+    if (game.officialUrl)
+      assert.equal(new URL(game.officialUrl).protocol, 'https:');
     assert.equal(new Set(game.screenshots).size, game.screenshots.length);
     assert.equal(new Set(game.tagIds).size, game.tagIds.length);
     for (const group of ['genre', 'core', 'mood'] as const) {
+      assert.ok(game.targets[group].length <= CONFIG.maxGuessTagsPerGroup);
       assert.equal(
         new Set(game.targets[group]).size,
         game.targets[group].length,
@@ -117,8 +122,8 @@ void test('curated fighting and shooter subgenres participate in genre picking a
     assert.equal(result.games.length, 0);
   }
 });
-void test('a full, correct target earns the published score at all six stages', () => {
-  for (let stage = 1; stage <= 6; stage++) {
+void test('a full, correct target earns the published score at all four stages', () => {
+  for (let stage = 1; stage <= CONFIG.stageNames.length; stage++) {
     const result = scoreGuess(
       { ...sample.targets, wouldClick: 'yes' },
       sample.targets,
@@ -172,15 +177,15 @@ void test('intention does not change the quiz score and optional empty targets a
     800,
   );
 });
-void test('missing video stages are skipped without renumbering point values', () => {
-  assert.deepEqual(
-    availableStages({ ...sample, youtubeId: null }),
-    [1, 2, 3, 6],
-  );
+void test('the single trailer stage is skipped when no verified video exists', () => {
+  const withoutVideo = { ...sample, youtubeId: null };
+  assert.deepEqual(availableStages(withoutVideo), [1, 2, 3]);
+  assert.equal(clueStageFor(withoutVideo, 6), 3);
   assert.deepEqual(
     availableStages({ ...sample, youtubeId: 'BrRWb7tFxR8' }),
-    [1, 2, 3, 4, 5, 6],
+    [1, 2, 3, 4],
   );
+  assert.equal(clueStageFor(sample, 6), 4);
 });
 void test('explicit dislikes override bounded behavioral feedback', () => {
   const genre = tag('Adventure'),
@@ -318,6 +323,7 @@ void test('spoiler-free shares contain scores but no target tags or game title',
   ]);
   assert.ok(text.includes('650 points'));
   assert.ok(text.includes('1/3 games'));
+  assert.equal(Array.from(text.split('\n')[1]).length, 4);
   assert.ok(!text.includes(sample.title));
   assert.ok(!text.includes('Adventure'));
 });

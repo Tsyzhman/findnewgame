@@ -1,6 +1,6 @@
 # FindNewGame
 
-An English-language daily game-discovery app with a Cloudline interface. Players explore three unknown indie games through six clues. Developers learn how independent players perceive their store materials.
+An English-language daily game-discovery app with a Cloudline interface. Players explore three unknown indie games through four progressive clues. Developers learn how independent players perceive their store materials.
 
 This is a working private beta implementation, not evidence that the business targets have been achieved. The initial catalog contains 20 clearly marked sample games and 430 canonical English Steam tags. Samples are not approved developer submissions. Billing is disabled by default.
 
@@ -21,7 +21,7 @@ Open `http://localhost:3000`. The port is strict: an existing listener must be s
 
 ## What is implemented
 
-- Player onboarding, weighted taste preferences, Hard No exclusions, personalized daily selection, six-stage quizzes, partial-match scoring, reveals, save/follow reactions, streaks, history, account export/deletion, and spoiler-free image sharing.
+- Player onboarding, weighted taste preferences, Hard No exclusions, personalized daily selection, four-stage quizzes, three-tag-per-group guesses, backward clue review, partial-match scoring, post-reveal game links, save/follow reactions, streaks, history, account export/deletion, and spoiler-free image sharing.
 - Selectable MMR diversity and contextual exploration policies with real-feedback gates, bounded per-player learning, immutable decision records, admin rollout controls, and observational outcome reports. The original personalized-random policy remains the default.
 - Developer studios, private asset uploads, Steam lookup, manual submissions, ranked perception targets, immutable material versions, team-test exclusions, calibration reports, misconception matrices, information gain, and between-user A/B tests.
 - Sponsored campaigns, Steam-tag audience targeting, viewable impressions, pacing, budget/frequency limits, and payment reconciliation. Campaign funding and donations remain unavailable until merchant configuration is verified.

@@ -1,4 +1,5 @@
 import { buildUserVector } from '@/lib/recommendation';
+import { clueStageFor } from '@/lib/scoring';
 import { validTimezone } from '@/lib/time';
 import type { GameContent, PublicUser } from '@/lib/types';
 import { activeTags, all, database, first, id } from './database';
@@ -131,10 +132,14 @@ export async function history(user: PublicUser, before?: string) {
       ...set,
       rounds: rounds
         .filter((r) => r.set_id === set.id)
-        .map(({ content_json, ...r }) => ({
-          ...r,
-          title: (JSON.parse(content_json) as GameContent).title,
-        })),
+        .map(({ content_json, ...r }) => {
+          const content = JSON.parse(content_json) as GameContent;
+          return {
+            ...r,
+            stage: clueStageFor(content, r.stage),
+            title: content.title,
+          };
+        }),
       totalScore: rounds
         .filter((r) => r.set_id === set.id)
         .reduce((sum, r) => sum + r.score, 0),

@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowLeft, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { api, useMe, useTags } from '@/lib/api';
+import { CONFIG } from '@/lib/config';
 import type { GameContent, TargetTags } from '@/lib/types';
 import {
   DeveloperShell,
@@ -29,6 +30,7 @@ const blank: Draft = {
   developer: '',
   publisher: '',
   steamUrl: '',
+  officialUrl: null,
   releaseState: 'released',
   description: '',
   capsule: '',
@@ -56,7 +58,11 @@ export function GameEditor({ gameId }: { gameId?: string }) {
     enabled: !!gameId && !!workspace.data?.developer,
   });
   if (loaded !== gameId && game.data && gameId) {
-    setDraft({ ...game.data.content, parentSteamUrl: '' });
+    setDraft({
+      ...game.data.content,
+      officialUrl: game.data.content.officialUrl ?? null,
+      parentSteamUrl: '',
+    });
     setLoaded(gameId);
   } else if (!gameId && workspace.data?.developer && loaded !== 'new') {
     setDraft((prev) => ({
@@ -171,6 +177,19 @@ export function GameEditor({ gameId }: { gameId?: string }) {
                   </ActionButton>
                 </div>
               </Field>
+              <Field
+                id="official-url"
+                label="Official website (optional)"
+                help="Shown only after the game is revealed. Use the game or studio’s official HTTPS page."
+              >
+                <TextInput
+                  id="official-url"
+                  type="url"
+                  value={draft.officialUrl ?? ''}
+                  onChange={(e) => update('officialUrl', e.target.value)}
+                  placeholder="https://yourgame.com/"
+                />
+              </Field>
               {lookup.error && <ErrorBox error={lookup.error} />}{' '}
               {lookup.data && <Notice>{lookup.data.notice}</Notice>}
               <div className="form-grid">
@@ -235,8 +254,8 @@ export function GameEditor({ gameId }: { gameId?: string }) {
               )}
               <Field
                 id="game-description"
-                label="Short description"
-                help={`${draft.description.length} / 600 characters. Explain the game clearly in English; 30 characters minimum.`}
+                label="Store description"
+                help={`${draft.description.length} / 600 characters. Shown only after the answer is revealed; 30 characters minimum.`}
               >
                 <Textarea
                   className="fng-textarea"
@@ -256,8 +275,8 @@ export function GameEditor({ gameId }: { gameId?: string }) {
                 <div>
                   <h2>The clues</h2>
                   <p>
-                    Title-free artwork, 3–5 screenshots, and one YouTube
-                    trailer.
+                    Title-free artwork, 3–5 screenshots, and one YouTube trailer
+                    or teaser.
                   </p>
                 </div>
               </div>
@@ -273,7 +292,7 @@ export function GameEditor({ gameId }: { gameId?: string }) {
                   <div className="screenshot-field" key={index}>
                     <ImageField
                       id={`screenshot-${index}`}
-                      label={`Screenshot ${index + 1}${index === 0 ? ' · first screenshot clue' : ''}`}
+                      label={`Screenshot ${index + 1}${index === 0 ? ' · shown alone, excluded from Gallery' : ' · Gallery'}`}
                       value={image}
                       onChange={(value) =>
                         update(
@@ -316,8 +335,8 @@ export function GameEditor({ gameId }: { gameId?: string }) {
               )}
               <Field
                 id="youtube-trailer"
-                label="YouTube trailer URL or video ID"
-                help="Use a public, embeddable trailer whose opening 15 seconds show the game clearly. Video is embedded, never uploaded or stored here."
+                label="YouTube trailer or teaser URL / video ID"
+                help="Use a public, embeddable video. Players choose when to load it and control full playback; video is never uploaded or stored here."
               >
                 <TextInput
                   id="youtube-trailer"
@@ -409,12 +428,12 @@ export function GameEditor({ gameId }: { gameId?: string }) {
                           })
                         }
                         group={group}
-                        max={group === 'core' ? 4 : 3}
+                        max={CONFIG.maxGuessTagsPerGroup}
                         label={
                           group === 'genre'
                             ? 'Target genre · choose 1–3'
                             : group === 'core'
-                              ? 'Target gameplay · choose 1–4'
+                              ? 'Target gameplay · choose 1–3'
                               : 'Target mood · optional, up to 3'
                         }
                         compact
@@ -438,7 +457,7 @@ export function GameEditor({ gameId }: { gameId?: string }) {
                 <li>English store information</li>
                 <li>Artwork without title or logo</li>
                 <li>Three to five different screenshots</li>
-                <li>A playable YouTube trailer</li>
+                <li>A playable YouTube trailer or teaser</li>
                 <li>Specific, honest target tags</li>
               </ul>
               <label className="checkbox-row">
